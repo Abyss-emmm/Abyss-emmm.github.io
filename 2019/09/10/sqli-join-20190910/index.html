@@ -22,7 +22,7 @@
 <meta property="og:image" content="http://yoursite.com/2019/09/10/sqli-join-20190910/4.png">
 <meta property="og:image" content="http://yoursite.com/2019/09/10/sqli-join-20190910/5.png">
 <meta property="og:image" content="http://yoursite.com/2019/09/10/sqli-join-20190910/6.png">
-<meta property="og:updated_time" content="2019-09-24T03:20:14.364Z">
+<meta property="og:updated_time" content="2019-09-24T06:32:35.873Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JOIN绕过逗号以及列名过滤">
 <meta name="twitter:description" content="正常使用join默认是内连，还分左连，右连，全连。这个知识点具体还是百度吧。语句类似如下select * from table1 join table2 on table1.id = table2.id这样会输出table1和table2中id相同的全部列。也可以选择只输出部分列select table1.name table2.xxx from table1 join table2 on tab">
@@ -191,6 +191,7 @@
 <p>现在假设<code>id</code>,<code>username</code>,<code>password</code>三个关键字都是不准输入的，现在需要查找username=’admin’的数据<br><code>select * from (select * from ((select 1)A join (select 2)B join (select 3)C) union select * from user)x where x.2 = &#39;admin&#39;;</code></p>
 <img src="/2019/09/10/sqli-join-20190910/4.png">
 <p>利用条件的话是需要知道加粗部分表名的结构（列数，select * 时列的顺序），实际攻击msyql时都是查找的information_schema中的表，可以在本地查看<br>select * from (select * from ((select 1)A join (select 2)B join (select 3)C) union select * from <strong>user</strong>)x where x.2 = ‘admin’;</p>
+<h2 id="PS"><a href="#PS" class="headerlink" title="PS"></a>PS</h2><p>如果只是要绕过列名，可以输入逗号的话，可以用逗号替换join（可以少输入点字符吧，或者万一join被过滤了呢）<br><code>select * from (select * from ((select 1)A , (select 2)B , (select 3)C) union select * from user)x where x.2 = &#39;admin&#39;;</code></p>
 <h1 id="例题"><a href="#例题" class="headerlink" title="例题"></a>例题</h1><p>i春秋上 “百度杯”CTF比赛九月场SQLi<br>直接访问链接，有两处提示</p>
 <img src="/2019/09/10/sqli-join-20190910/5.png">
 <img src="/2019/09/10/sqli-join-20190910/6.png">
