@@ -150,6 +150,83 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-python-env-20191002" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/02/python-env-20191002/">Python环境变量</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/02/python-env-20191002/" class="archive-article-date">
+  	<time datetime="2019-10-02T06:37:33.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-02</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-查看"><a href="#1-查看" class="headerlink" title="1 查看"></a>1 查看</h1><p>通过命令<code>python --help</code>可以查看到与Python相关的环境变量，下面是python3.6.5的部分结果</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">root@kali:~<span class="comment"># python3 --help</span></span><br><span class="line">usage: python3 [option] ... [-c cmd | -m mod | file | -] [arg] ...</span><br><span class="line">Options and arguments (and corresponding environment variables):</span><br><span class="line">-B     : don<span class="string">'t write .pyc files on import; also PYTHONDONTWRITEBYTECODE=x</span></span><br><span class="line"><span class="string">-c cmd : program passed in as string (terminates option list)</span></span><br><span class="line"><span class="string">-d     : debug output from parser; also PYTHONDEBUG=x</span></span><br><span class="line"><span class="string">-E     : ignore PYTHON* environment variables (such as PYTHONPATH)</span></span><br><span class="line"><span class="string">-i     : inspect interactively after running script; forces a prompt even</span></span><br><span class="line"><span class="string">         if stdin does not appear to be a terminal; also PYTHONINSPECT=x</span></span><br><span class="line"><span class="string">-O     : remove assert and __debug__-dependent statements; add .opt-1 before</span></span><br><span class="line"><span class="string">         .pyc extension; also PYTHONOPTIMIZE=x</span></span><br><span class="line"><span class="string">-s     : don'</span>t add user site directory to sys.path; also PYTHONNOUSERSITE</span><br><span class="line">-S     : don<span class="string">'t imply '</span>import site<span class="string">' on initialization</span></span><br><span class="line"><span class="string">-u     : force the binary I/O layers of stdout and stderr to be unbuffered;</span></span><br><span class="line"><span class="string">         stdin is always buffered; text I/O layer will be line-buffered;</span></span><br><span class="line"><span class="string">         also PYTHONUNBUFFERED=x</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Other environment variables:</span></span><br><span class="line"><span class="string">PYTHONSTARTUP: file executed on interactive startup (no default)</span></span><br><span class="line"><span class="string">PYTHONPATH   : '</span>:<span class="string">'-separated list of directories prefixed to the</span></span><br><span class="line"><span class="string">               default module search path.  The result is sys.path.</span></span><br><span class="line"><span class="string">PYTHONHOME   : alternate &lt;prefix&gt; directory (or &lt;prefix&gt;:&lt;exec_prefix&gt;).</span></span><br><span class="line"><span class="string">               The default module search path uses &lt;prefix&gt;/lib/pythonX.X.</span></span><br><span class="line"><span class="string">PYTHONCASEOK : ignore case in '</span>import<span class="string">' statements (Windows).</span></span><br><span class="line"><span class="string">PYTHONIOENCODING: Encoding[:errors] used for stdin/stdout/stderr.</span></span><br><span class="line"><span class="string">PYTHONFAULTHANDLER: dump the Python traceback on fatal errors.</span></span><br><span class="line"><span class="string">PYTHONHASHSEED: if this variable is set to '</span>random<span class="string">', a random value is used</span></span><br><span class="line"><span class="string">   to seed the hashes of str, bytes and datetime objects.  It can also be</span></span><br><span class="line"><span class="string">   set to an integer in the range [0,4294967295] to get hash values with a</span></span><br><span class="line"><span class="string">   predictable seed.</span></span><br><span class="line"><span class="string">PYTHONMALLOC: set the Python memory allocators and/or install debug hooks</span></span><br><span class="line"><span class="string">   on Python memory allocators. Use PYTHONMALLOC=debug to install debug</span></span><br><span class="line"><span class="string">   hooks.</span></span><br></pre></td></tr></table></figure>
+        
+          <a class="article-more-a" href="/2019/10/02/python-env-20191002/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/02/python-env-20191002/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-mysql-read-write-file-20190924" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -417,6 +494,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">SQLi</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Python</a>
               </li>
             
             <div class="clearfix"></div>

