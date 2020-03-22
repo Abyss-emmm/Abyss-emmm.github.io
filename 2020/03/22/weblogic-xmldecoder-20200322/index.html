@@ -20,7 +20,7 @@
 <meta property="og:image" content="http://yoursite.com/2020/03/22/weblogic-xmldecoder-20200322/2.png">
 <meta property="og:image" content="http://yoursite.com/2020/03/22/weblogic-xmldecoder-20200322/3.png">
 <meta property="og:image" content="http://yoursite.com/2020/03/22/weblogic-xmldecoder-20200322/4.png">
-<meta property="og:updated_time" content="2020-03-22T08:51:35.914Z">
+<meta property="og:updated_time" content="2020-03-22T08:57:42.402Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="XMLDecoder系列漏洞">
 <meta name="twitter:description" content="1 参考链接WebLogic安全研究报告浅谈Weblogic反序列化——XMLDecoder的绕过史Weblogic XMLDecoder RCE分析cve-2017-3506&amp;amp;cve-2017-10271WebLogic RCE(CVE-2019-2725)漏洞之旅">
@@ -223,31 +223,14 @@
 <tr>
 <td>/_async/AsyncResponseServiceHttps</td>
 </tr>
-<tr>
-<td>发包注意<code>Content-Type: text/xml</code></td>
-</tr>
-<tr>
-<td><img src="/2020/03/22/weblogic-xmldecoder-20200322/1.png"></td>
-</tr>
-<tr>
-<td>报错返回了调用栈</td>
-</tr>
-<tr>
-<td><img src="/2020/03/22/weblogic-xmldecoder-20200322/2.png"></td>
-</tr>
-<tr>
-<td>直接针对XMLDecoder部分（因为前面的看不懂），在readHeaderOld方法处设置断点。</td>
-</tr>
-<tr>
-<td>文件路径<code>src\lib\weblogic.jar!\weblogic\wsee\jaxws\workcontext\WorkContextTube.class</code></td>
-</tr>
-<tr>
-<td><strong>WorkContextTube</strong></td>
-</tr>
-<tr>
-<td><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">readHeaderOld</span><span class="params">(Header var1)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        XMLStreamReader var2 = var1.readHeader();</span><br><span class="line">        var2.nextTag();</span><br><span class="line">        var2.nextTag();</span><br><span class="line">        XMLStreamReaderToXMLStreamWriter var3 = <span class="keyword">new</span> XMLStreamReaderToXMLStreamWriter();</span><br><span class="line">        ByteArrayOutputStream var4 = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">        XMLStreamWriter var5 = XMLStreamWriterFactory.create(var4);</span><br><span class="line">        var3.bridge(var2, var5);</span><br><span class="line">        var5.close();</span><br><span class="line">        <span class="comment">//执行到这时，var4的值就是java标签开始的XML数据，可看下面截图</span></span><br><span class="line">        <span class="comment">//之后执行了WorkContextXmlInputAdapter构造函数</span></span><br><span class="line">        WorkContextXmlInputAdapter var6 = <span class="keyword">new</span> WorkContextXmlInputAdapter(<span class="keyword">new</span> ByteArrayInputStream(var4.toByteArray()));</span><br><span class="line">        <span class="keyword">this</span>.receive(var6);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (XMLStreamException var7) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> WebServiceException(var7);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException var8) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> WebServiceException(var8);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></td>
-</tr>
 </tbody></table>
+<p>发包注意<code>Content-Type: text/xml</code></p>
+<img src="/2020/03/22/weblogic-xmldecoder-20200322/1.png">
+<p>报错返回了调用栈</p>
+<img src="/2020/03/22/weblogic-xmldecoder-20200322/2.png">
+<p>直接针对XMLDecoder部分（因为前面的看不懂），在readHeaderOld方法处设置断点。<br>文件路径<code>src\lib\weblogic.jar!\weblogic\wsee\jaxws\workcontext\WorkContextTube.class</code><br><strong>WorkContextTube</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">readHeaderOld</span><span class="params">(Header var1)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        XMLStreamReader var2 = var1.readHeader();</span><br><span class="line">        var2.nextTag();</span><br><span class="line">        var2.nextTag();</span><br><span class="line">        XMLStreamReaderToXMLStreamWriter var3 = <span class="keyword">new</span> XMLStreamReaderToXMLStreamWriter();</span><br><span class="line">        ByteArrayOutputStream var4 = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">        XMLStreamWriter var5 = XMLStreamWriterFactory.create(var4);</span><br><span class="line">        var3.bridge(var2, var5);</span><br><span class="line">        var5.close();</span><br><span class="line">        <span class="comment">//执行到这时，var4的值就是java标签开始的XML数据，可看下面截图</span></span><br><span class="line">        <span class="comment">//之后执行了WorkContextXmlInputAdapter构造函数</span></span><br><span class="line">        WorkContextXmlInputAdapter var6 = <span class="keyword">new</span> WorkContextXmlInputAdapter(<span class="keyword">new</span> ByteArrayInputStream(var4.toByteArray()));</span><br><span class="line">        <span class="keyword">this</span>.receive(var6);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (XMLStreamException var7) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> WebServiceException(var7);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException var8) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> WebServiceException(var8);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <img src="/2020/03/22/weblogic-xmldecoder-20200322/3.png">
 <p>文件路径<code>src\lib\weblogic.jar!\weblogic\wsee\workarea\WorkContextXmlInputAdapter.class</code><br><strong>WorkContextXmlInputAdapter</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">WorkContextXmlInputAdapter</span><span class="params">(InputStream var1)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//创建了XMLDecoder对象</span></span><br><span class="line">    <span class="keyword">this</span>.xmlDecoder = <span class="keyword">new</span> XMLDecoder(var1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
