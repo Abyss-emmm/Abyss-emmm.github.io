@@ -1,0 +1,943 @@
+<!DOCTYPE html><html dir="ltr" lang="en" class="scroll-smooth" data-astro-cid-sckkx6r4> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="canonical" href="https://abyss.coladollar.com/posts/ai-agent/claude-code/claude_md_load/"><meta name="generator" content="Astro v5.12.0"><!-- General Meta Tags --><title>CLAUDE.md 加载路径 | Abyss Blog</title><meta name="title" content="CLAUDE.md 加载路径 | Abyss Blog"><meta name="description" content="结合 Claude Code 源码梳理 CLAUDE.md、CLAUDE.local.md 与 .claude/rules 的实际加载顺序、作用范围，以及子目录与 worktree 场景下的处理逻辑。"><meta name="author" content="Abyss"><link rel="sitemap" href="/sitemap-index.xml"><!-- Open Graph / Facebook --><meta property="og:title" content="CLAUDE.md 加载路径 | Abyss Blog"><meta property="og:description" content="结合 Claude Code 源码梳理 CLAUDE.md、CLAUDE.local.md 与 .claude/rules 的实际加载顺序、作用范围，以及子目录与 worktree 场景下的处理逻辑。"><meta property="og:url" content="https://abyss.coladollar.com/posts/ai-agent/claude-code/claude_md_load/"><meta property="og:image" content="https://abyss.coladollar.com/posts/ai-agent/claude-code/claude_md_load/index.png"><!-- Article Published/Modified time --><meta property="article:published_time" content="2026-04-16T12:12:12.000Z"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://abyss.coladollar.com/posts/ai-agent/claude-code/claude_md_load/"><meta property="twitter:title" content="CLAUDE.md 加载路径 | Abyss Blog"><meta property="twitter:description" content="结合 Claude Code 源码梳理 CLAUDE.md、CLAUDE.local.md 与 .claude/rules 的实际加载顺序、作用范围，以及子目录与 worktree 场景下的处理逻辑。"><meta property="twitter:image" content="https://abyss.coladollar.com/posts/ai-agent/claude-code/claude_md_load/index.png"><!-- Google JSON-LD Structured data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"CLAUDE.md 加载路径 | Abyss Blog","image":"https://abyss.coladollar.com/posts/ai-agent/claude-code/claude_md_load/index.png","datePublished":"2026-04-16T12:12:12.000Z","author":[{"@type":"Person","name":"Abyss"}]}</script><!-- Enable RSS feed auto-discovery  --><!-- https://docs.astro.build/en/recipes/rss/#enabling-rss-feed-auto-discovery --><link rel="alternate" type="application/rss+xml" title="Abyss Blog" href="https://abyss.coladollar.com/rss.xml"><meta name="theme-color" content=""><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.D98dxaWf.js"></script><script src="/toggle-theme.js"></script><link rel="stylesheet" href="/_astro/about.Dyfm3ZY0.css">
+<style>@keyframes astroFadeInOut{0%{opacity:1}to{opacity:0}}@keyframes astroFadeIn{0%{opacity:0;mix-blend-mode:plus-lighter}to{opacity:1;mix-blend-mode:plus-lighter}}@keyframes astroFadeOut{0%{opacity:1;mix-blend-mode:plus-lighter}to{opacity:0;mix-blend-mode:plus-lighter}}@keyframes astroSlideFromRight{0%{transform:translate(100%)}}@keyframes astroSlideFromLeft{0%{transform:translate(-100%)}}@keyframes astroSlideToRight{to{transform:translate(100%)}}@keyframes astroSlideToLeft{to{transform:translate(-100%)}}@media (prefers-reduced-motion){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}[data-astro-transition-scope]{animation:none!important}}
+:where([data-astro-image]){object-fit:var(--fit);object-position:var(--pos);height:auto}:where([data-astro-image=full-width]){width:100%}:where([data-astro-image=constrained]){max-width:100%}
+</style><style>[data-astro-transition-scope="astro-fam6wyqg-1"] { view-transition-name: claude-md-\52A0\8F7D\8DEF\5F84; }@layer astro { ::view-transition-old(claude-md-\52A0\8F7D\8DEF\5F84) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(claude-md-\52A0\8F7D\8DEF\5F84) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(claude-md-\52A0\8F7D\8DEF\5F84) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(claude-md-\52A0\8F7D\8DEF\5F84) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-fam6wyqg-1"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-fam6wyqg-1"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-fam6wyqg-1"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-fam6wyqg-1"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-fam6wyqg-1"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-fam6wyqg-1"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-fam6wyqg-1"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-fam6wyqg-1"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style><style>[data-astro-transition-scope="astro-36ssibgs-2"] { view-transition-name: ai-coding; }@layer astro { ::view-transition-old(ai-coding) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(ai-coding) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(ai-coding) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(ai-coding) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-36ssibgs-2"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-36ssibgs-2"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-36ssibgs-2"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-36ssibgs-2"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-36ssibgs-2"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-36ssibgs-2"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-36ssibgs-2"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-36ssibgs-2"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style><style>[data-astro-transition-scope="astro-36ssibgs-3"] { view-transition-name: ai-agent; }@layer astro { ::view-transition-old(ai-agent) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(ai-agent) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(ai-agent) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(ai-agent) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-36ssibgs-3"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-36ssibgs-3"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-36ssibgs-3"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-36ssibgs-3"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-36ssibgs-3"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-36ssibgs-3"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-36ssibgs-3"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-36ssibgs-3"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style><style>[data-astro-transition-scope="astro-36ssibgs-4"] { view-transition-name: claude-code; }@layer astro { ::view-transition-old(claude-code) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(claude-code) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(claude-code) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(claude-code) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-36ssibgs-4"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-36ssibgs-4"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-36ssibgs-4"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-36ssibgs-4"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-36ssibgs-4"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-36ssibgs-4"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-36ssibgs-4"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-36ssibgs-4"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style><style>[data-astro-transition-scope="astro-36ssibgs-5"] { view-transition-name: claude-md; }@layer astro { ::view-transition-old(claude-md) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(claude-md) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(claude-md) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(claude-md) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-36ssibgs-5"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-36ssibgs-5"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-36ssibgs-5"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-36ssibgs-5"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-36ssibgs-5"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-36ssibgs-5"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-36ssibgs-5"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-36ssibgs-5"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style></head> <body data-astro-cid-sckkx6r4>  <header> <a id="skip-to-content" href="#main-content" class="absolute start-16 -top-full z-50 bg-background px-3 py-2 text-accent backdrop-blur-lg transition-all focus:top-4">
+Skip to content
+</a> <div id="nav-container" class="mx-auto flex max-w-app flex-col items-center justify-between sm:flex-row"> <div id="top-nav-wrap" class="relative flex w-full items-baseline justify-between bg-background p-4 sm:items-center sm:py-6"> <a href="/" class="absolute py-1 text-xl leading-8 font-semibold whitespace-nowrap sm:static sm:my-auto sm:text-2xl sm:leading-none"> Abyss Blog </a> <nav id="nav-menu" class="flex w-full flex-col items-center sm:ms-2 sm:flex-row sm:justify-end sm:space-x-4 sm:py-0"> <button id="menu-btn" class="focus-outline self-end p-2 sm:hidden" aria-label="Open Menu" aria-expanded="false" aria-controls="menu-items"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden" id="close-icon"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-menu-deep" id="menu-icon"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 6h16" /><path d="M7 12h13" /><path d="M10 18h10" /></svg> </button> <ul id="menu-items" class="mt-4 grid w-44 grid-cols-2 place-content-center gap-2 [&#38;>li>a]:block [&#38;>li>a]:px-4 [&#38;>li>a]:py-3 [&#38;>li>a]:text-center [&#38;>li>a]:font-medium [&#38;>li>a]:hover:text-accent sm:[&#38;>li>a]:px-2 sm:[&#38;>li>a]:py-1 hidden sm:mt-0 sm:flex sm:w-auto sm:gap-x-5 sm:gap-y-0"> <li class="col-span-2"> <a href="/posts" class="active-nav">
+Posts
+</a> </li> <li class="col-span-2"> <a href="/tags">
+Tags
+</a> </li> <li class="col-span-2"> <a href="/about">
+About
+</a> </li> <li class="col-span-2"> <a href="/archives" class="group inline-block hover:text-accent focus-outline flex justify-center p-3 sm:p-1" aria-label="archives" title="Archives"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden sm:inline-block"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 4m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z" /><path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" /><path d="M10 12l4 0" /></svg> <span class="sm:sr-only">Archives</span> </a> </li> <li class="col-span-1 flex items-center justify-center"> <a href="/search" class="group inline-block hover:text-accent focus-outline flex p-3 sm:p-1" aria-label="search" title="Search"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-search"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg> <span class="sr-only">Search</span> </a> </li> <li class="col-span-1 flex items-center justify-center"> <button id="theme-btn" class="focus-outline relative size-12 p-4 sm:size-8 hover:[&>svg]:stroke-accent" title="Toggles light & dark" aria-label="auto" aria-live="polite"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute top-[50%] left-[50%] -translate-[50%] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" /></svg> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute top-[50%] left-[50%] -translate-[50%] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg> </button> </li> </ul> </nav> </div> </div> <div class="mx-auto max-w-app px-4"> <hr class="border-border" aria-hidden="true"> </div> </header> <script type="module">function s(){const e=document.querySelector("#menu-btn"),t=document.querySelector("#menu-items"),n=document.querySelector("#menu-icon"),o=document.querySelector("#close-icon");!e||!t||!n||!o||e.addEventListener("click",()=>{const c=e.getAttribute("aria-expanded")==="true";e.setAttribute("aria-expanded",c?"false":"true"),e.setAttribute("aria-label",c?"Open Menu":"Close Menu"),t.classList.toggle("hidden"),n.classList.toggle("hidden"),o.classList.toggle("hidden")})}s();document.addEventListener("astro:after-swap",s);</script> <div class="mx-auto flex w-full max-w-app items-center justify-start px-2"><a id="back-button" href="/" class="group inline-block hover:text-accent focus-outline mt-8 mb-2 flex hover:text-foreground/75"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 rtl:rotate-180"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg><span>Go back</span></a></div><script type="module">function o(){const t=document.querySelector("#back-button"),e=sessionStorage.getItem("backUrl");e&&t&&(t.href=e)}document.addEventListener("astro:page-load",o);o();</script> <main id="main-content" class="mx-auto w-full max-w-app px-4 pb-12 xl:max-w-6xl" data-pagefind-body> <h1 class="inline-block text-2xl font-bold text-accent sm:text-3xl" data-astro-transition-scope="astro-fam6wyqg-1"> CLAUDE.md 加载路径 </h1> <div class="my-2 flex items-center gap-2"> <div class="flex items-center gap-x-2 opacity-80"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 min-w-[1.375rem]"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /><path d="M7 14h.013" /><path d="M10.01 14h.005" /><path d="M13.01 14h.005" /><path d="M16.015 14h.005" /><path d="M13.015 17h.005" /><path d="M7.01 17h.005" /><path d="M10.01 17h.005" /></svg>  <time class="text-sm sm:text-base" datetime="2026-04-16T12:12:12.000Z">16 Apr, 2026</time> </div> <span aria-hidden="true" class="max-sm:hidden hidden">|</span>  </div> <div class="mt-8 xl:grid xl:grid-cols-[minmax(0,1fr)_14rem] xl:items-start xl:gap-8 2xl:grid-cols-[minmax(0,1fr)_16rem]"> <div class="min-w-0"> <article id="article" class="app-prose max-w-none prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)"> <h2 id="加载顺序总览">加载顺序总览</h2>
+<p>主入口源码文件：</p>
+<ul>
+<li><a href="/opt/abyss/Code/AI_Agent/claude-code/restored-src/src/utils/claudemd.ts">utils/claudemd.ts</a></li>
+</ul>
+<p>核心函数：</p>
+<ul>
+<li>getMemoryFiles</li>
+<li>getMemoryFilesForNestedDirectory</li>
+<li>processMemoryFile</li>
+<li>processMdRules</li>
+<li>processConditionedMdRules</li>
+</ul>
+<p>“会话启动时”的主加载顺序，可以把源码逻辑概括成下面这段伪代码：</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="ts"><code><span class="line"><span style="--shiki-light:#C2C3C5;--shiki-light-font-style:inherit;--shiki-dark:#637777;--shiki-dark-font-style:italic">// file: src/utils/claudemd.ts</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic">export</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> getMemoryFiles</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> memoize</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic">  async</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D9F5DD"> (</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D7DBE0;--shiki-dark-font-style:italic">forceIncludeExternal</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA">:</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#C5E478;--shiki-dark-font-style:italic"> boolean</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#FF5874;--shiki-dark-font-style:italic"> false</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D9F5DD">)</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA">:</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#FFCB8B;--shiki-dark-font-style:italic"> Promise</span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA">&#x3C;</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#FFCB8B;--shiki-dark-font-style:italic">MemoryFileInfo</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">[]</span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA">></span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =></span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA"> {</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">  result</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> []</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">  processedPaths</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> new</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> Set</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#C2C3C5;--shiki-light-font-style:inherit;--shiki-dark:#637777;--shiki-dark-font-style:italic">  // 1. 先加载 Managed</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">  processMemoryFile</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">getMemoryPath</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Managed</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Managed</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">  processMdRules</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA">{</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic"> rulesDir</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">:</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> getManagedClaudeRulesDir</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">()</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic"> type</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">:</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Managed</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA"> }</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#C2C3C5;--shiki-light-font-style:inherit;--shiki-dark:#637777;--shiki-dark-font-style:italic">  // 2. 再加载 User</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">  if</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> (</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">isSettingSourceEnabled</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">userSettings</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">))</span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA"> {</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">    processMemoryFile</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">getMemoryPath</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">User</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">User</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">    processMdRules</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA">{</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic"> rulesDir</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">:</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> getUserClaudeRulesDir</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">()</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic"> type</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">:</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">User</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA"> }</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#C2C3C5;--shiki-light-font-style:inherit;--shiki-dark:#637777;--shiki-dark-font-style:italic">  // 3. 从 current working directory 一路向上收集目录</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">  dirs</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> [</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">cwd</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> parent</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">cwd</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> parent</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">parent</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">cwd</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">))</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic"> root child</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#C2C3C5;--shiki-light-font-style:inherit;--shiki-dark:#637777;--shiki-dark-font-style:italic">  // 4. 按“从高层目录到当前目录”的顺序遍历</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">  for</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic"> dir</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> in</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> reverse</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">dirs</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA"> {</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">    if</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> (</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">isSettingSourceEnabled</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">projectSettings</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">))</span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA"> {</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">      processMemoryFile</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">join</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">dir</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">CLAUDE.md</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Project</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">      processMemoryFile</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">join</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">dir</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">.claude</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">CLAUDE.md</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Project</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">      processMdRules</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA">{</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic"> rulesDir</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">:</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> join</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">dir</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">.claude</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">rules</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic"> type</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">:</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Project</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA"> }</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">    if</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> (</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">isSettingSourceEnabled</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">localSettings</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">))</span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA"> {</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">      processMemoryFile</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">join</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">dir</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">CLAUDE.local.md</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Local</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA">    }</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#C2C3C5;--shiki-light-font-style:inherit;--shiki-dark:#637777;--shiki-dark-font-style:italic">  // 5. 如果开启了额外目录记忆加载，再处理 --add-dir</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">  if</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> (</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic"> enabled</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA"> {</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">    for</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic"> dir</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> in</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic"> additionalDirs</span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA"> {</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">      processMemoryFile</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">join</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">dir</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">CLAUDE.md</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Project</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">      processMemoryFile</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">join</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">dir</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">.claude</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">CLAUDE.md</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Project</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">      processMdRules</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA">{</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic"> rulesDir</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">:</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> join</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">dir</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">.claude</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">rules</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic"> type</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">:</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Project</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA"> }</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">      processMemoryFile</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">join</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">dir</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">CLAUDE.local.md</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Local</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA">    }</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic">    return</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic"> result</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA">  }</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span></code></pre>
+<p>因此可以把 <code>CLAUDE.md</code> 的实际加载顺序概括成一句话：</p>
+<ol>
+<li>先按 <code>Managed -> User -> Project -> Local</code> 做会话级默认加载</li>
+<li>Project / Local 会沿当前工作目录一路向上查找</li>
+<li>当 Claude 读取目标子目录文件时，再通过 nested memory 补充该目录下的 <code>CLAUDE.md</code> / <code>CLAUDE.local.md</code> / <code>.claude/rules/*.md</code></li>
+</ol>
+<p>“读取某个子目录文件时”的按需补充加载，见 <a href="#%E5%AD%90%E7%9B%AE%E5%BD%95%E4%B8%AD%E7%9A%84-claudemd-%E4%BD%95%E6%97%B6%E5%8A%A0%E8%BD%BD">子目录中的 CLAUDE.md 何时加载</a>。</p>
+<h2 id="四类指令来源">四类指令来源</h2>
+<h3 id="managed-policy">Managed policy</h3>
+<p>这是组织级、机器级的统一指令，优先用于公司安全、合规、组织级规范。</p>
+<p>常见位置：</p>
+<ul>
+<li>macOS: <code>/Library/Application Support/ClaudeCode/CLAUDE.md</code></li>
+<li>Linux / WSL: <code>/etc/claude-code/CLAUDE.md</code></li>
+<li>Windows: <code>C:\Program Files\ClaudeCode\CLAUDE.md</code></li>
+</ul>
+<p>对应源码里的类型是 <code>Managed</code>，在 <code>getMemoryFiles()</code> 里最先加载：</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="ts"><code><span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> managedClaudeMd</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> getMemoryPath</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Managed</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#1976D2;--shiki-dark:#D6DEEB">result</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic">.</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">push</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA">  ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#D32F2F;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic">await</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> processMemoryFile</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">    managedClaudeMd</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">    '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Managed</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">    processedPaths</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">    includeExternal</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">  ))</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span></code></pre>
+<p>它的特点是：</p>
+<ul>
+<li>组织统一管理</li>
+<li>对当前机器上的所有用户生效</li>
+<li>不属于项目仓库内容</li>
+<li>在整体加载顺序里最早进入</li>
+</ul>
+<h3 id="user-instructions">User instructions</h3>
+<p>这是用户级、跨项目的全局个人指令。</p>
+<p>典型位置：</p>
+<ul>
+<li><code>~/.claude/CLAUDE.md</code></li>
+<li><code>~/.claude/rules/*.md</code></li>
+</ul>
+<p>用途通常是：</p>
+<ul>
+<li>你的个人代码风格偏好</li>
+<li>你习惯的工作流</li>
+<li>适用于所有项目的长期偏好</li>
+</ul>
+<p>在代码里，这一层只有在 <code>userSettings</code> 开启时才加载。</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="ts"><code><span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">if</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> (</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">isSettingSourceEnabled</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">userSettings</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)) {</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">  const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> userClaudeMd</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> getMemoryPath</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">User</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA">  ...</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">}</span></span></code></pre>
+<p><code>userSettings</code> 不是通过 <code>CLAUDE.md</code> 文件内部字段开关控制的，而是通过“当前会话允许加载哪些 setting source”来控制。</p>
+<p>对应源码文件和位置：</p>
+<ul>
+<li><code>--setting-sources</code> 参数解析：
+<a href="/opt/abyss/Code/AI_Agent/claude-code/restored-src/src/main.tsx:484">main.tsx:484</a></li>
+<li>参数值到 source 的映射：
+<a href="/opt/abyss/Code/AI_Agent/claude-code/restored-src/src/utils/settings/constants.ts:128">utils/settings/constants.ts:128</a></li>
+<li>默认允许的 source 列表：
+<a href="/opt/abyss/Code/AI_Agent/claude-code/restored-src/src/bootstrap/state.ts:313">bootstrap/state.ts:313</a></li>
+</ul>
+<p>简化后的控制逻辑可以写成：</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="ts"><code><span class="line"><span style="--shiki-light:#C2C3C5;--shiki-light-font-style:inherit;--shiki-dark:#637777;--shiki-dark-font-style:italic">// file: src/main.tsx</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> settingSourcesArg</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> eagerParseCliFlag</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">--setting-sources</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">if</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> (settingSourcesArg </span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">!==</span><span style="--shiki-light:#1976D2;--shiki-dark:#82AAFF"> undefined</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">) {</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">  const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> sources</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> parseSettingSourcesFlag</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">settingSourcesArg</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">  setAllowedSettingSources</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(sources)</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#C2C3C5;--shiki-light-font-style:inherit;--shiki-dark:#637777;--shiki-dark-font-style:italic">// file: src/utils/settings/constants.ts</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">isSettingSourceEnabled</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">userSettings</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">) </span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">=</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">  getEnabledSettingSources</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">()</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic">.</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">includes</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">userSettings</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span></code></pre>
+<p>其中 <code>parseSettingSourcesFlag()</code> 支持的 CLI 值只有三个：</p>
+<ul>
+<li><code>user</code></li>
+<li><code>project</code></li>
+<li><code>local</code></li>
+</ul>
+<p>映射关系是：</p>
+<ul>
+<li><code>user</code> -> <code>userSettings</code></li>
+<li><code>project</code> -> <code>projectSettings</code></li>
+<li><code>local</code> -> <code>localSettings</code></li>
+</ul>
+<h4 id="usersettings-的默认值"><code>userSettings</code> 的默认值</h4>
+<p>在普通 CLI 启动路径里，默认的 <code>allowedSettingSources</code> 是：</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="ts"><code><span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">allowedSettingSources</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">:</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> [</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">  '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">userSettings</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">  '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">projectSettings</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">  '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">localSettings</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">  '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">flagSettings</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">  '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">policySettings</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">]</span></span></code></pre>
+<p>这意味着如果你什么参数都不传，<code>userSettings</code> 默认就是开启的。</p>
+<p>对应效果就是：</p>
+<ul>
+<li>会加载 <code>~/.claude/CLAUDE.md</code></li>
+<li>会加载 <code>~/.claude/rules/*.md</code></li>
+</ul>
+<h4 id="如何显式开启-usersettings">如何显式开启 <code>userSettings</code></h4>
+<p>虽然默认已经开启，但如果你想显式指定，可以通过命令参数：</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="bash"><code><span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">claude</span><span style="--shiki-light:#2B5581;--shiki-dark:#82AAFF"> --setting-sources</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> user</span></span></code></pre>
+<p>或者：</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="bash"><code><span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">claude</span><span style="--shiki-light:#2B5581;--shiki-dark:#82AAFF"> --setting-sources</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> user,project,local</span></span></code></pre>
+<p>这两种写法都会让 <code>isSettingSourceEnabled('userSettings')</code> 返回 <code>true</code>。</p>
+<h4 id="如何显式不设置-user">如何显式不设置 <code>user</code></h4>
+<p>如果你想明确不加载用户级指令，就不要把 <code>user</code> 写进 <code>--setting-sources</code> 列表。</p>
+<p>例如：</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="bash"><code><span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">claude</span><span style="--shiki-light:#2B5581;--shiki-dark:#82AAFF"> --setting-sources</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> project,local</span></span></code></pre>
+<p>此时：</p>
+<ul>
+<li><code>projectSettings</code> 开启</li>
+<li><code>localSettings</code> 开启</li>
+<li><code>userSettings</code> 关闭</li>
+</ul>
+<p>于是 <code>~/.claude/CLAUDE.md</code> 和 <code>~/.claude/rules/*.md</code> 都不会进入加载链路。</p>
+<p>如果写成：</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="bash"><code><span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">claude</span><span style="--shiki-light:#2B5581;--shiki-dark:#82AAFF"> --setting-sources</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> project</span></span></code></pre>
+<p>那就只保留项目级来源，不加载 user 和 local。</p>
+<p>另外，<code>parseSettingSourcesFlag('')</code> 会返回空数组。也就是说，从逻辑上讲“一个都不启用”也是可能的；只是 CLI 通常不会手动这样传。即便如此，<code>flagSettings</code> 和 <code>policySettings</code> 仍会由 <code>getEnabledSettingSources()</code> 强制补回。</p>
+<p>这里要注意几个结论：</p>
+<ul>
+<li>CLI 默认是开启 <code>userSettings</code> 的</li>
+<li><code>userSettings</code> 的开关入口是 <code>--setting-sources</code></li>
+<li>如果显式通过 <code>--setting-sources</code> 排除了 <code>user</code>，这一层就不会加载</li>
+<li>“不设置 user”最直接的方式就是：
+<code>claude --setting-sources project,local</code></li>
+</ul>
+<h3 id="project-instructions">Project instructions</h3>
+<p>这是团队共享、随仓库版本控制分发的项目级指令。</p>
+<p>常见位置有两个：</p>
+<ul>
+<li><code>./CLAUDE.md</code></li>
+<li><code>./.claude/CLAUDE.md</code></li>
+</ul>
+<p>还包括项目规则目录：</p>
+<ul>
+<li><code>./.claude/rules/*.md</code></li>
+</ul>
+<p>这层的用途通常是：</p>
+<ul>
+<li>项目架构说明</li>
+<li>build / test / lint 命令</li>
+<li>团队共享规范</li>
+<li>某些目录或文件类型的规则</li>
+</ul>
+<p>实现上，Claude Code 会从当前工作目录开始一路向上遍历到根目录，在每一层都尝试读取：</p>
+<ul>
+<li><code>CLAUDE.md</code></li>
+<li><code>.claude/CLAUDE.md</code></li>
+<li><code>.claude/rules/*.md</code></li>
+</ul>
+<p>对应实现见 <a href="/opt/abyss/Code/AI_Agent/claude-code/restored-src/src/utils/claudemd.ts:849">utils/claudemd.ts</a> 之后：</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="ts"><code><span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> dirs</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA">:</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#C5E478;--shiki-dark-font-style:italic"> string</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">[]</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> []</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> originalCwd</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> getOriginalCwd</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">()</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">let</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic"> currentDir</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic"> originalCwd</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic">while</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> (currentDir </span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">!==</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> parse</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(currentDir)</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic">.</span><span style="--shiki-light:#24292EFF;--shiki-dark:#BAEBE2">root</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">) {</span></span>
+<span class="line"><span style="--shiki-light:#1976D2;--shiki-dark:#D6DEEB">  dirs</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic">.</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">push</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(currentDir)</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">  currentDir </span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">=</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> dirname</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(currentDir)</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic">for</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> (</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> dir</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> of</span><span style="--shiki-light:#1976D2;--shiki-dark:#D6DEEB"> dirs</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic">.</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">reverse</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">()) {</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">  if</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> (</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">isSettingSourceEnabled</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">projectSettings</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">) </span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">&#x26;&#x26;</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> !</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">skipProject) {</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">    const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> projectPath</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> join</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">dir</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">CLAUDE.md</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA">    ...</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">    const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> dotClaudePath</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> join</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">dir</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">.claude</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">CLAUDE.md</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA">    ...</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">    const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> rulesDir</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> join</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">dir</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">.claude</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">rules</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA">    ...</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">  }</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">}</span></span></code></pre>
+<p>这里有两个关键点：</p>
+<ul>
+<li>不是只加载当前目录一个文件，而是会沿着目录树向上加载祖先目录中的项目级指令</li>
+<li><code>.claude/rules/*.md</code> 和 <code>CLAUDE.md</code> 属于同一套 instruction 体系，不是额外附件</li>
+</ul>
+<h3 id="local-instructions">Local instructions</h3>
+<p>这是当前项目下仅对个人生效的私有指令。</p>
+<p>位置通常是：</p>
+<ul>
+<li><code>./CLAUDE.local.md</code></li>
+</ul>
+<p>典型用途：</p>
+<ul>
+<li>个人 sandbox URL</li>
+<li>私有测试账号</li>
+<li>你在当前项目中的个人偏好</li>
+</ul>
+<p>官方文档建议把它加入 <code>.gitignore</code>，不要提交到仓库。</p>
+<p>代码里它对应 <code>Local</code> 类型，并在每层目录中、项目指令之后加载，见 <a href="/opt/abyss/Code/AI_Agent/claude-code/restored-src/src/utils/claudemd.ts:922">utils/claudemd.ts</a>：</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="ts"><code><span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">if</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> (</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">isSettingSourceEnabled</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">localSettings</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)) {</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">  const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> localPath</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> join</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">dir</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">CLAUDE.local.md</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#1976D2;--shiki-dark:#D6DEEB">  result</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic">.</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">push</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA">    ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#D32F2F;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic">await</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> processMemoryFile</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">      localPath</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">      '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Local</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">      processedPaths</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">      includeExternal</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">    ))</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">  )</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">}</span></span></code></pre>
+<p>这也意味着：</p>
+<ul>
+<li>它和祖先目录里的 <code>CLAUDE.local.md</code> 一样会被一起发现</li>
+<li>在同一层目录里，它会比 <code>CLAUDE.md</code> 更晚进入结果列表</li>
+<li>如果规则冲突，通常“后加载的更靠后，影响更强”</li>
+</ul>
+<h2 id="放置建议">放置建议</h2>
+<p>根据官方总结，可以把使用场景理解成下面四类：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>范围</th><th>位置</th><th>适合放什么</th></tr></thead><tbody><tr><td>Managed policy</td><td>系统级固定路径</td><td>组织安全规范、合规约束、公司通用标准</td></tr><tr><td>User instructions</td><td><code>~/.claude/CLAUDE.md</code></td><td>个人跨项目偏好</td></tr><tr><td>Project instructions</td><td><code>./CLAUDE.md</code> 或 <code>./.claude/CLAUDE.md</code></td><td>团队共享的项目约束</td></tr><tr><td>Local instructions</td><td><code>./CLAUDE.local.md</code></td><td>当前项目下仅你自己使用的信息</td></tr></tbody></table>
+<p>简单理解：</p>
+<ul>
+<li>想让整个组织统一生效，放 Managed</li>
+<li>想让自己所有项目都生效，放 User</li>
+<li>想让团队共享，放 Project</li>
+<li>想只在当前项目里对自己生效，放 Local</li>
+</ul>
+<h2 id="实际加载机制">实际加载机制</h2>
+<h3 id="当前实现里的实际加载顺序">当前实现里的实际加载顺序</h3>
+<p>源码中的总体顺序是：</p>
+<ol>
+<li><code>Managed</code></li>
+<li><code>User</code></li>
+<li><code>Project</code></li>
+<li><code>Local</code></li>
+</ol>
+<p>并且注释明确说明：</p>
+<ul>
+<li>later-loaded files take precedence over earlier ones</li>
+</ul>
+<p>所以更准确地说，不是“高层覆盖低层”，而是“后加载的优先级更高”。这就形成了：</p>
+<ul>
+<li>组织级提供底线规则</li>
+<li>用户级提供全局个人偏好</li>
+<li>项目级补充团队共享约束</li>
+<li>本地级最后叠加个人项目特化</li>
+</ul>
+<h3 id="不只是根目录还会沿祖先目录向上查找">不只是根目录：还会沿祖先目录向上查找</h3>
+<p>这一点很重要。</p>
+<p>Claude Code 不是只在当前项目根目录找一次 <code>CLAUDE.md</code>。它的行为是：</p>
+<ol>
+<li>以 <code>originalCwd</code> 为起点</li>
+<li>一路向上走到文件系统根目录</li>
+<li>每层都尝试读取 project 和 local 相关文件</li>
+</ol>
+<p>所以如果当前工作目录是：</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="text"><code><span class="line"><span>/repo/apps/web</span></span></code></pre>
+<p>那么它可能会依次发现：</p>
+<ul>
+<li><code>/repo/CLAUDE.md</code></li>
+<li><code>/repo/CLAUDE.local.md</code></li>
+<li><code>/repo/apps/CLAUDE.md</code></li>
+<li><code>/repo/apps/web/CLAUDE.md</code></li>
+</ul>
+<p>这也是为什么 monorepo 里可以用“根规则 + 子目录规则”的方式分层组织。</p>
+<h3 id="子目录中的-claudemd-何时加载">子目录中的 CLAUDE.md 何时加载</h3>
+<p>官方文档提到：子目录中的 <code>CLAUDE.md</code> 不是总在会话启动时全部加载，而是会在 Claude 读取该子目录文件时按需进入上下文。</p>
+<p>调用链大致如下：</p>
+<ol>
+<li>Claude 准备处理一个具体文件路径</li>
+<li>附件流程调用 <code>getNestedMemoryAttachmentsForFile(filePath, ...)</code></li>
+<li>这个函数根据 <code>filePath</code> 计算从 <code>CWD -> 目标目录</code> 的目录链</li>
+<li>再对这些目录逐个调用 <code>getMemoryFilesForNestedDirectory(dir, filePath, ...)</code></li>
+<li>最后把结果包装成 <code>nested_memory</code> attachments 注入上下文</li>
+</ol>
+<p>“读取目标文件时触发”的代码片段在 <a href="/opt/abyss/Code/AI_Agent/claude-code/restored-src/src/utils/attachments.ts:1792">utils/attachments.ts:1792</a>：</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="ts"><code><span class="line"><span style="--shiki-light:#D32F2F;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic">async</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> function</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> getNestedMemoryAttachmentsForFile</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D9F5DD">(</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D7DBE0">  filePath</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA">:</span><span style="--shiki-light:#1976D2;--shiki-dark:#C5E478"> string</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D7DBE0">  toolUseContext</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA">:</span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFCB8B"> ToolUseContext</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D7DBE0">  appState</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA">:</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> { toolPermissionContext</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA">:</span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFCB8B"> ToolPermissionContext</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> }</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D9F5DD">)</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA">:</span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFCB8B"> Promise</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">&#x3C;</span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFCB8B">Attachment</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">[]> {</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">  const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> processedPaths</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> new</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> Set</span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA">&#x3C;</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#C5E478;--shiki-dark-font-style:italic">string</span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA">></span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">()</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">  const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> originalCwd</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> getOriginalCwd</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">  const</span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA"> {</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> nestedDirs</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> cwdLevelDirs</span><span style="--shiki-light:#24292EFF;--shiki-dark:#C792EA"> }</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> getDirectoriesToProcess</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">    filePath</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">    originalCwd</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">  )</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic">  for</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> (</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> dir</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> of</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> nestedDirs) {</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">    const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> memoryFiles</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#D32F2F;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic"> await</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> getMemoryFilesForNestedDirectory</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">      dir</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">      filePath</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">      processedPaths</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">    )</span></span>
+<span class="line"><span style="--shiki-light:#1976D2;--shiki-dark:#D6DEEB">    attachments</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic">.</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">push</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA">      ...</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">memoryFilesToAttachments</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(memoryFiles</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> toolUseContext</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> filePath)</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">    )</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">  }</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">}</span></span></code></pre>
+<p>比如，IDE 打开的文件就会触发这个流程，见 <a href="/opt/abyss/Code/AI_Agent/claude-code/restored-src/src/utils/attachments.ts:1877">utils/attachments.ts:1877</a>：</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="ts"><code><span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> nestedMemoryAttachments</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#D32F2F;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic"> await</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> getNestedMemoryAttachmentsForFile</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span></span>
+<span class="line"><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">  ideSelection</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic">.</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#BAEBE2;--shiki-dark-font-style:italic">filePath</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">  toolUseContext</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">  appState</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span></code></pre>
+<p>负责找CLAUDE.md的是 <a href="/opt/abyss/Code/AI_Agent/claude-code/restored-src/src/utils/claudemd.ts:1249">utils/claudemd.ts:1249</a> 的 <code>getMemoryFilesForNestedDirectory(...)</code>：</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="ts"><code><span class="line"><span style="--shiki-light:#D32F2F;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic">export</span><span style="--shiki-light:#D32F2F;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic"> async</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> function</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> getMemoryFilesForNestedDirectory</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D9F5DD">(</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D7DBE0">  dir</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA">:</span><span style="--shiki-light:#1976D2;--shiki-dark:#C5E478"> string</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D7DBE0">  targetPath</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA">:</span><span style="--shiki-light:#1976D2;--shiki-dark:#C5E478"> string</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D7DBE0">  processedPaths</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA">:</span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFCB8B"> Set</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">&#x3C;</span><span style="--shiki-light:#1976D2;--shiki-dark:#C5E478">string</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">></span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D9F5DD">)</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA">:</span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFCB8B"> Promise</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">&#x3C;</span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFCB8B">MemoryFileInfo</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">[]> {</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">  if</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> (</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">isSettingSourceEnabled</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">projectSettings</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)) {</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">    processMemoryFile</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">join</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(dir</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">CLAUDE.md</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Project</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">    processMemoryFile</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">join</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(dir</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">.claude</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">CLAUDE.md</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Project</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">  if</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> (</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">isSettingSourceEnabled</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">localSettings</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)) {</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">    processMemoryFile</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">join</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(dir</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">CLAUDE.local.md</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Local</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">  processMdRules</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">({ rulesDir</span><span style="--shiki-light:#D32F2F;--shiki-dark:#D6DEEB">:</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> join</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(dir</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">.claude</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">rules</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> type</span><span style="--shiki-light:#D32F2F;--shiki-dark:#D6DEEB">:</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Project</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> })</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">  processConditionedMdRules</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(targetPath</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> join</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(dir</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">.claude</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">rules</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Project</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#5F7E97">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">}</span></span></code></pre>
+<p>所以这部分更准确的理解应该是：</p>
+<ul>
+<li>会话启动时：加载当前工作目录向上的祖先链</li>
+<li>文件读取或处理目标文件路径时：附件流程基于 <code>filePath</code> 触发 nested memory，再补充目标子目录对应的 <code>CLAUDE.md</code> / <code>CLAUDE.local.md</code> / <code>.claude/rules/*.md</code></li>
+</ul>
+<h3 id="clauderulesmd-也是同一套加载路径的一部分"><code>.claude/rules/*.md</code> 也是同一套加载路径的一部分</h3>
+<p>当前实现里，<code>.claude/rules/*.md</code> 会被一起发现：</p>
+<ul>
+<li>User 级：<code>~/.claude/rules/*.md</code></li>
+<li>Project 级：<code>./.claude/rules/*.md</code></li>
+</ul>
+<p>而且它们支持两种模式：</p>
+<ul>
+<li>无 <code>paths</code> frontmatter：无条件规则，启动时加载</li>
+<li>有 <code>paths</code> frontmatter：条件规则，按目标文件路径匹配后加载</li>
+</ul>
+<p>这说明“放在哪里”不仅是文件路径问题，也包含“是否拆成规则目录”的结构设计问题。</p>
+<h3 id="--add-dir-的特殊情况"><code>--add-dir</code> 的特殊情况</h3>
+<p>默认情况下，<code>--add-dir</code> 只是额外授权目录访问，不会自动加载这些目录下的 <code>CLAUDE.md</code>。</p>
+<p>只有开启环境变量后，才会把 additional directories 的 memory 文件也加载进来：</p>
+<ul>
+<li><code>CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1</code></li>
+</ul>
+<p>对应实现见 <a href="/opt/abyss/Code/AI_Agent/claude-code/restored-src/src/utils/claudemd.ts:936">utils/claudemd.ts</a>：</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="ts"><code><span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">if</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> (</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">isEnvTruthy</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#1976D2;--shiki-dark:#D6DEEB">process</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic">.</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#FAF39F;--shiki-dark-font-style:italic">env</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#C792EA;--shiki-dark-font-style:italic">.</span><span style="--shiki-light:#1976D2;--shiki-dark:#82AAFF">CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)) {</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">  const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> additionalDirs</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> getAdditionalDirectoriesForClaudeMd</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">()</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA">  ...</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">}</span></span></code></pre>
+<p>所以：</p>
+<ul>
+<li><code>--add-dir</code> 不等于自动加载额外目录的指令文件</li>
+<li>还需要一个额外开关控制的环境变量</li>
+</ul>
+<h2 id="worktree-场景的特殊处理">worktree 场景的特殊处理</h2>
+<p>这个问题的产生是claude code自身代码行为导致的，所以这个场景就是它自己本身的补丁：</p>
+<ul>
+<li>使用 <code>claude -w &#x3C;name></code> 创建 worktree</li>
+<li>Claude Code 把 worktree 放到 <code>.claude/worktrees/&#x3C;name>/</code></li>
+<li>这个路径位于主仓库目录内部</li>
+</ul>
+<p>这个问题对应的就是源码注释里提到的 issue：</p>
+<ul>
+<li><a href="https://github.com/anthropics/claude-code/issues/29599">anthropics/claude-code#29599</a></li>
+</ul>
+<p>issue 里的核心现象是：</p>
+<ul>
+<li><code>claude -w &#x3C;name></code> 创建的 worktree 位于 <code>.claude/worktrees/&#x3C;name>/</code></li>
+<li>Claude Code 向上扫描祖先目录时，会同时命中：
+<ul>
+<li>内层 worktree root</li>
+<li>外层主仓库 root</li>
+</ul>
+</li>
+<li>于是同一套 project-level 文件被重复加载</li>
+</ul>
+<p>被重复的通常是这些已检入版本控制的文件：</p>
+<ul>
+<li><code>CLAUDE.md</code></li>
+<li><code>.claude/CLAUDE.md</code></li>
+<li><code>.claude/rules/*.md</code></li>
+</ul>
+<p>所以这段逻辑不是在泛化处理“任意目录下的 git worktree”，而是在专门修复 <code>claude -w</code> 生成的 nested worktree 问题。</p>
+<h3 id="一个更直观的例子">一个更直观的例子</h3>
+<p>假设 <code>claude -w feat</code> 生成的目录关系是：</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="text"><code><span class="line"><span>/repo                         &#x3C;- 主仓库 root（canonicalRoot）</span></span>
+<span class="line"><span>/repo/.claude/worktrees/feat  &#x3C;- 当前 worktree root（gitRoot）</span></span></code></pre>
+<p>如果当前工作目录在：</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="text"><code><span class="line"><span>/repo/.claude/worktrees/feat/apps/web</span></span></code></pre>
+<p>那么向上遍历时，路径链可能同时经过：</p>
+<ul>
+<li><code>/repo/.claude/worktrees/feat</code></li>
+<li><code>/repo</code></li>
+</ul>
+<p>这两个位置会各自呈现出一套 project-level 文件：</p>
+<ul>
+<li><code>/repo/.claude/worktrees/feat/CLAUDE.md</code></li>
+<li><code>/repo/.claude/worktrees/feat/.claude/rules/*.md</code></li>
+<li><code>/repo/CLAUDE.md</code></li>
+<li><code>/repo/.claude/rules/*.md</code></li>
+</ul>
+<p>从 issue 描述看，这两边通常还是“同一份 git 内容的两份路径表现”。因此如果继续同时加载，实质上就是把同一套规则重复注入两次。</p>
+<h3 id="源码是怎么判断这是嵌套-worktree的">源码是怎么判断“这是嵌套 worktree”的</h3>
+<p>对应实现见 <a href="/opt/abyss/Code/AI_Agent/claude-code/restored-src/src/utils/claudemd.ts:868">utils/claudemd.ts:868</a>：</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="ts"><code><span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> gitRoot</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> findGitRoot</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">originalCwd</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> canonicalRoot</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> findCanonicalGitRoot</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">originalCwd</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> isNestedWorktree</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">  gitRoot</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> !==</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#FF5874;--shiki-dark-font-style:italic"> null</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> &#x26;&#x26;</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">  canonicalRoot</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> !==</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#FF5874;--shiki-dark-font-style:italic"> null</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> &#x26;&#x26;</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">  normalizePathForComparison</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">gitRoot</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> !==</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">    normalizePathForComparison</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">canonicalRoot</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> &#x26;&#x26;</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">  pathInWorkingPath</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">gitRoot</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic"> canonicalRoot</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span></code></pre>
+<p>这段判断的意思可以概括成：</p>
+<ul>
+<li><code>gitRoot</code>：当前 worktree 认为自己的 git 根目录</li>
+<li><code>canonicalRoot</code>：主仓库的规范根目录</li>
+<li>如果两者不相等，并且 <code>gitRoot</code> 位于 <code>canonicalRoot</code> 之内</li>
+<li>那就说明这是一个“嵌套在主仓库内部的 worktree”</li>
+</ul>
+<p>也就是说，这里判断的是：</p>
+<ul>
+<li>当前会话是否处在一个 nested worktree 里</li>
+</ul>
+<p>而不是：</p>
+<ul>
+<li>当前仓库是否只是普通意义上的任意 git worktree</li>
+</ul>
+<h3 id="真正跳过的是哪些文件">真正跳过的是哪些文件</h3>
+<p>接下来源码会为每个祖先目录计算一个 <code>skipProject</code>：</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="ts"><code><span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">const</span><span style="--shiki-light:#1976D2;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> skipProject</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> =</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">  isNestedWorktree</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> &#x26;&#x26;</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">  pathInWorkingPath</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">dir</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic"> canonicalRoot</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> &#x26;&#x26;</span></span>
+<span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">  !</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">pathInWorkingPath</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic">dir</span><span style="--shiki-light:#212121;--shiki-dark:#C792EA">,</span><span style="--shiki-light:#24292EFF;--shiki-light-font-style:inherit;--shiki-dark:#D6DEEB;--shiki-dark-font-style:italic"> gitRoot</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span></code></pre>
+<p>它的含义是：</p>
+<ul>
+<li>当前确实是 nested worktree</li>
+<li>当前正在处理的这个祖先目录 <code>dir</code> 位于主仓库里面</li>
+<li>但这个目录并不在当前 worktree 里面</li>
+</ul>
+<p>只要满足这三个条件，就认为这个目录属于“主仓库中高于当前 <code>.claude/worktrees/&#x3C;name></code> worktree 的那一段路径”，于是跳过它的 project-level memory。</p>
+<p>然后真正的加载判断是：</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="ts"><code><span class="line"><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">if</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> (</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">isSettingSourceEnabled</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">projectSettings</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">) </span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA">&#x26;&#x26;</span><span style="--shiki-light:#D32F2F;--shiki-dark:#C792EA"> !</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">skipProject) {</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">  processMemoryFile</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">join</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(dir</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">CLAUDE.md</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Project</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">  processMemoryFile</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">join</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(dir</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">.claude</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">CLAUDE.md</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Project</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">  processMdRules</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">({ rulesDir</span><span style="--shiki-light:#D32F2F;--shiki-dark:#D6DEEB">:</span><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic"> join</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">(dir</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">.claude</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">rules</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">)</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> type</span><span style="--shiki-light:#D32F2F;--shiki-dark:#D6DEEB">:</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD"> '</span><span style="--shiki-light:#22863A;--shiki-dark:#ECC48D">Project</span><span style="--shiki-light:#22863A;--shiki-dark:#D9F5DD">'</span><span style="--shiki-light:#212121;--shiki-dark:#D6DEEB">,</span><span style="--shiki-light:#D32F2F;--shiki-dark:#7FDBCA"> ...</span><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB"> })</span></span>
+<span class="line"><span style="--shiki-light:#24292EFF;--shiki-dark:#D6DEEB">}</span></span></code></pre>
+<p>所以被跳过的是：</p>
+<ul>
+<li><code>dir/CLAUDE.md</code></li>
+<li><code>dir/.claude/CLAUDE.md</code></li>
+<li><code>dir/.claude/rules/*.md</code></li>
+</ul>
+<p>也就是所有 <code>Project</code> 类型、且来自主仓库上层路径的已检入规则。</p>
+<h3 id="为什么-claudelocalmd-没一起跳过">为什么 <code>CLAUDE.local.md</code> 没一起跳过</h3>
+<p>这是这一节最容易误解的地方。</p>
+<p>源码并没有把 <code>Local</code> 和 <code>Project</code> 一起跳过，而是只对 <code>Project</code> 应用 <code>skipProject</code>。</p>
+<p>原因在源码注释里写得很清楚：</p>
+<ul>
+<li><code>CLAUDE.local.md</code> 通常是 gitignored</li>
+<li>它往往只存在于主仓库工作目录，而不一定存在于每个 worktree checkout 中</li>
+</ul>
+<p>因此如果连 <code>Local</code> 一起跳过，反而可能把用户真正想保留的个人本地偏好丢掉。</p>
+<p>所以这个策略不是“worktree 上层路径都不读”，而是更精确地说：</p>
+<ul>
+<li>跳过主仓库上层路径里的 <code>Project</code> 级已检入规则，避免重复</li>
+<li>保留 <code>Local</code> 级私有规则，避免把个人本地说明丢掉</li>
+</ul>
+<h4 id="这一节可以压缩成一句话">这一节可以压缩成一句话</h4>
+<p>在 <code>claude -w</code> 创建的 nested worktree 场景下，Claude Code 会跳过“主仓库中位于当前 <code>.claude/worktrees/&#x3C;name></code> worktree 之外”的 project-level <code>CLAUDE.md</code> 和 <code>.claude/rules/*.md</code>，避免同一套已检入规则被重复加载；但 <code>CLAUDE.local.md</code> 仍然保留，因为它通常是私有的、gitignored 的本地说明。</p>
+<h2 id="结论">结论</h2>
+<p>“CLAUDE.md 放哪里”在 Claude Code 里并不是一个简单的文档组织问题，而是一个直接影响上下文注入范围的问题。</p>
+<p>可以记成这套最实用的规则：</p>
+<ul>
+<li>组织统一规则：放 Managed policy 路径</li>
+<li>个人跨项目偏好：放 <code>~/.claude/CLAUDE.md</code></li>
+<li>团队共享项目规则：放 <code>./CLAUDE.md</code> 或 <code>./.claude/CLAUDE.md</code></li>
+<li>当前项目下你的私有偏好：放 <code>./CLAUDE.local.md</code></li>
+<li>更细粒度的模块规则：拆到 <code>.claude/rules/*.md</code></li>
+</ul>
+<p>而在实现层面，Claude Code 会：</p>
+<ul>
+<li>先按 <code>Managed -> User -> Project -> Local</code> 顺序加载</li>
+<li>对当前工作目录一路向上扫描祖先目录</li>
+<li>对读取到的子目录文件再补充 nested memory</li>
+<li>在特定条件下再处理 <code>--add-dir</code> 和 worktree 特殊逻辑</li>
+</ul>
+<p>所以，选择正确的放置位置，本质上是在决定“CLAUDE.md 应该作用于谁、作用到哪一层、在什么时机进入模型上下文”。</p> </article> <hr class="my-8 border-dashed">  <ul class="mt-4 mb-8 sm:my-8"> <li class="group inline-block group-hover:cursor-pointer my-1 underline-offset-4"> <a href="/tags/ai-coding/" class="relative pe-2 text-lg underline decoration-dashed group-hover:-top-0.5 group-hover:text-accent focus-visible:p-1 focus-visible:no-underline text-sm" data-astro-transition-scope="astro-36ssibgs-2"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block opacity-80 -me-3.5 size-4"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 9l14 0" /><path d="M5 15l14 0" /><path d="M11 4l-4 16" /><path d="M17 4l-4 16" /></svg>
+&nbsp;<span>AI Coding</span> </a> </li><li class="group inline-block group-hover:cursor-pointer my-1 underline-offset-4"> <a href="/tags/ai-agent/" class="relative pe-2 text-lg underline decoration-dashed group-hover:-top-0.5 group-hover:text-accent focus-visible:p-1 focus-visible:no-underline text-sm" data-astro-transition-scope="astro-36ssibgs-3"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block opacity-80 -me-3.5 size-4"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 9l14 0" /><path d="M5 15l14 0" /><path d="M11 4l-4 16" /><path d="M17 4l-4 16" /></svg>
+&nbsp;<span>AI Agent</span> </a> </li><li class="group inline-block group-hover:cursor-pointer my-1 underline-offset-4"> <a href="/tags/claude-code/" class="relative pe-2 text-lg underline decoration-dashed group-hover:-top-0.5 group-hover:text-accent focus-visible:p-1 focus-visible:no-underline text-sm" data-astro-transition-scope="astro-36ssibgs-4"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block opacity-80 -me-3.5 size-4"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 9l14 0" /><path d="M5 15l14 0" /><path d="M11 4l-4 16" /><path d="M17 4l-4 16" /></svg>
+&nbsp;<span>Claude Code</span> </a> </li><li class="group inline-block group-hover:cursor-pointer my-1 underline-offset-4"> <a href="/tags/claude-md/" class="relative pe-2 text-lg underline decoration-dashed group-hover:-top-0.5 group-hover:text-accent focus-visible:p-1 focus-visible:no-underline text-sm" data-astro-transition-scope="astro-36ssibgs-5"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block opacity-80 -me-3.5 size-4"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 9l14 0" /><path d="M5 15l14 0" /><path d="M11 4l-4 16" /><path d="M17 4l-4 16" /></svg>
+&nbsp;<span>CLAUDE.md</span> </a> </li> </ul> <div id="btt-btn-container" class="fixed end-4 bottom-8 z-50 md:sticky md:end-auto md:float-end md:me-1 translate-y-14 opacity-0 transition duration-500"> <button data-button="back-to-top" class="group relative bg-background px-2 py-1 size-14 rounded-full shadow-xl md:h-8 md:w-fit md:rounded-md md:shadow-none md:focus-visible:rounded-none md:bg-background/35 md:bg-clip-padding md:backdrop-blur-lg"> <span id="progress-indicator" class="absolute inset-0 -z-10 block size-14 scale-110 rounded-full bg-transparent md:hidden md:h-8 md:rounded-md"></span> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block rotate-90 md:hidden"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg> <span class="sr-only text-sm group-hover:text-accent md:not-sr-only"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-4"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 5l0 14" /><path d="M16 9l-4 -4" /><path d="M8 9l4 -4" /></svg>
+Back To Top
+</span> </button> </div> <script data-astro-rerun>
+  /** Scrolls the document to the top when
+   * the "Back to Top" button is clicked. */
+  function backToTop() {
+    const rootElement = document.documentElement;
+    const btnContainer = document.querySelector("#btt-btn-container");
+    const backToTopBtn = document.querySelector("[data-button='back-to-top']");
+    const progressIndicator = document.querySelector("#progress-indicator");
+
+    if (!rootElement || !btnContainer || !backToTopBtn || !progressIndicator)
+      return;
+
+    // Attach click event handler for back-to-top button
+    backToTopBtn.addEventListener("click", () => {
+      document.body.scrollTop = 0; // For Safari
+      document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+    });
+
+    // Handle button visibility according to scroll position
+    let lastVisible = null;
+    function handleScroll() {
+      const scrollTotal = rootElement.scrollHeight - rootElement.clientHeight;
+      const scrollTop = rootElement.scrollTop;
+      const scrollPercent = Math.floor((scrollTop / scrollTotal) * 100);
+
+      progressIndicator.style.setProperty(
+        "background-image",
+        `conic-gradient(var(--accent), var(--accent) ${scrollPercent}%, transparent ${scrollPercent}%)`
+      );
+
+      const isVisible = scrollTop / scrollTotal > 0.3;
+
+      if (isVisible !== lastVisible) {
+        btnContainer.classList.toggle("opacity-100", isVisible);
+        btnContainer.classList.toggle("translate-y-0", isVisible);
+        btnContainer.classList.toggle("opacity-0", !isVisible);
+        btnContainer.classList.toggle("translate-y-14", !isVisible);
+        lastVisible = isVisible;
+      }
+    }
+
+    let ticking = false;
+    document.addEventListener("scroll", () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+  }
+  backToTop();
+</script> <div class="flex flex-none flex-col items-center justify-center gap-1 md:items-start"><span class="italic">Share this post on:</span><div class="text-center"><a href="https://wa.me/?text=https://abyss.coladollar.com/posts/ai-agent/claude-code/claude_md_load/" class="group inline-block hover:text-accent scale-90 p-2 hover:rotate-6 sm:p-1" title="Share this post via WhatsApp"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 scale-125 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent sm:scale-110"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 21l1.65 -3.8a9 9 0 1 1 3.4 2.9l-5.05 .9" /><path d="M9 10a.5 .5 0 0 0 1 0v-1a.5 .5 0 0 0 -1 0v1a5 5 0 0 0 5 5h1a.5 .5 0 0 0 0 -1h-1a.5 .5 0 0 0 0 1" /></svg><span class="sr-only">Share this post via WhatsApp</span></a><a href="https://www.facebook.com/sharer.php?u=https://abyss.coladollar.com/posts/ai-agent/claude-code/claude_md_load/" class="group inline-block hover:text-accent scale-90 p-2 hover:rotate-6 sm:p-1" title="Share this post on Facebook"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 scale-125 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent sm:scale-110"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7 10v4h3v7h4v-7h3l1 -4h-4v-2a1 1 0 0 1 1 -1h3v-4h-3a5 5 0 0 0 -5 5v2h-3" /></svg><span class="sr-only">Share this post on Facebook</span></a><a href="https://x.com/intent/post?url=https://abyss.coladollar.com/posts/ai-agent/claude-code/claude_md_load/" class="group inline-block hover:text-accent scale-90 p-2 hover:rotate-6 sm:p-1" title="Share this post on X"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 scale-125 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent sm:scale-110"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 4l11.733 16h4.267l-11.733 -16z" /><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" /></svg><span class="sr-only">Share this post on X</span></a><a href="https://t.me/share/url?url=https://abyss.coladollar.com/posts/ai-agent/claude-code/claude_md_load/" class="group inline-block hover:text-accent scale-90 p-2 hover:rotate-6 sm:p-1" title="Share this post via Telegram"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 scale-125 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent sm:scale-110"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 10l-4 4l6 6l4 -16l-18 7l4 2l2 6l3 -4" /></svg><span class="sr-only">Share this post via Telegram</span></a></div></div> <hr class="my-6 border-dashed"> <!-- Previous/Next Post Buttons --> <div data-pagefind-ignore class="grid grid-cols-1 gap-6 sm:grid-cols-2"> <a href="/posts/tools/code-reset-expiry" class="flex w-full gap-1 hover:opacity-75"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block flex-none rtl:rotate-180"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg> <div> <span>Previous Post</span> <div class="text-sm text-accent/85">Codex CLI 额度重置状态查询工具</div> </div> </a> <a href="/posts/tools/bundlr" class="flex w-full justify-end gap-1 text-end hover:opacity-75 sm:col-start-2"> <div> <span>Next Post</span> <div class="text-sm text-accent/85">bundlr小工具</div> </div> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block flex-none rtl:rotate-180"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 6l6 6l-6 6" /></svg> </a> </div> </div> <aside class="hidden xl:block xl:w-56 2xl:w-64" aria-label="Table of contents"><div class="xl:fixed xl:top-24 xl:w-56 2xl:w-64 max-h-[calc(100vh-8rem)] overflow-y-auto rounded-2xl border border-border/60 bg-background/80 p-5 backdrop-blur" style="right: max(1rem, calc((100vw - 72rem) / 2 + 1rem));"><p class="mb-4 text-sm font-semibold tracking-wide text-accent uppercase">
+本文目录
+</p><nav><ol class="space-y-2 text-sm leading-6"><li class="text-foreground/80"><a href="#加载顺序总览" class="inline-block decoration-dashed underline-offset-4 transition hover:text-accent hover:underline">加载顺序总览</a></li><li class="text-foreground/80"><a href="#四类指令来源" class="inline-block decoration-dashed underline-offset-4 transition hover:text-accent hover:underline">四类指令来源</a></li><li class="text-foreground/80 ms-4"><a href="#managed-policy" class="inline-block decoration-dashed underline-offset-4 transition hover:text-accent hover:underline">Managed policy</a></li><li class="text-foreground/80 ms-4"><a href="#user-instructions" class="inline-block decoration-dashed underline-offset-4 transition hover:text-accent hover:underline">User instructions</a></li><li class="text-foreground/80 ms-4"><a href="#project-instructions" class="inline-block decoration-dashed underline-offset-4 transition hover:text-accent hover:underline">Project instructions</a></li><li class="text-foreground/80 ms-4"><a href="#local-instructions" class="inline-block decoration-dashed underline-offset-4 transition hover:text-accent hover:underline">Local instructions</a></li><li class="text-foreground/80"><a href="#放置建议" class="inline-block decoration-dashed underline-offset-4 transition hover:text-accent hover:underline">放置建议</a></li><li class="text-foreground/80"><a href="#实际加载机制" class="inline-block decoration-dashed underline-offset-4 transition hover:text-accent hover:underline">实际加载机制</a></li><li class="text-foreground/80 ms-4"><a href="#当前实现里的实际加载顺序" class="inline-block decoration-dashed underline-offset-4 transition hover:text-accent hover:underline">当前实现里的实际加载顺序</a></li><li class="text-foreground/80 ms-4"><a href="#不只是根目录还会沿祖先目录向上查找" class="inline-block decoration-dashed underline-offset-4 transition hover:text-accent hover:underline">不只是根目录：还会沿祖先目录向上查找</a></li><li class="text-foreground/80 ms-4"><a href="#子目录中的-claudemd-何时加载" class="inline-block decoration-dashed underline-offset-4 transition hover:text-accent hover:underline">子目录中的 CLAUDE.md 何时加载</a></li><li class="text-foreground/80 ms-4"><a href="#clauderulesmd-也是同一套加载路径的一部分" class="inline-block decoration-dashed underline-offset-4 transition hover:text-accent hover:underline">.claude/rules/*.md 也是同一套加载路径的一部分</a></li><li class="text-foreground/80 ms-4"><a href="#--add-dir-的特殊情况" class="inline-block decoration-dashed underline-offset-4 transition hover:text-accent hover:underline">--add-dir 的特殊情况</a></li><li class="text-foreground/80"><a href="#worktree-场景的特殊处理" class="inline-block decoration-dashed underline-offset-4 transition hover:text-accent hover:underline">worktree 场景的特殊处理</a></li><li class="text-foreground/80 ms-4"><a href="#一个更直观的例子" class="inline-block decoration-dashed underline-offset-4 transition hover:text-accent hover:underline">一个更直观的例子</a></li><li class="text-foreground/80 ms-4"><a href="#源码是怎么判断这是嵌套-worktree的" class="inline-block decoration-dashed underline-offset-4 transition hover:text-accent hover:underline">源码是怎么判断“这是嵌套 worktree”的</a></li><li class="text-foreground/80 ms-4"><a href="#真正跳过的是哪些文件" class="inline-block decoration-dashed underline-offset-4 transition hover:text-accent hover:underline">真正跳过的是哪些文件</a></li><li class="text-foreground/80 ms-4"><a href="#为什么-claudelocalmd-没一起跳过" class="inline-block decoration-dashed underline-offset-4 transition hover:text-accent hover:underline">为什么 CLAUDE.local.md 没一起跳过</a></li><li class="text-foreground/80"><a href="#结论" class="inline-block decoration-dashed underline-offset-4 transition hover:text-accent hover:underline">结论</a></li></ol></nav></div></aside> </div> </main> <footer class="w-full mt-auto"> <div class="mx-auto max-w-app px-0"> <hr class="border-border" aria-hidden="true"> </div> <div class="flex flex-col items-center justify-between py-6 sm:flex-row-reverse sm:py-4"> <div class="flex-wrap justify-center gap-1 flex"> <a href="https://github.com/Abyss-emmm" class="group inline-block hover:text-accent p-2 hover:rotate-6 sm:p-1" title="Abyss Blog on GitHub"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 scale-125 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent sm:scale-110"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" /></svg> <span class="sr-only">Abyss Blog on GitHub</span> </a> </div> <div class="my-2 flex flex-col items-center whitespace-nowrap sm:flex-row"> <span>Copyright &#169; 2026</span> <span class="hidden sm:inline">&nbsp;|&nbsp;</span> <span>All rights reserved.</span> </div> </div> </footer>  </body></html> <script data-astro-rerun>
+  /** Create a progress indicator
+   *  at the top */
+  function createProgressBar() {
+    // Create the main container div
+    const progressContainer = document.createElement("div");
+    progressContainer.className =
+      "progress-container fixed top-0 z-10 h-1 w-full bg-background";
+
+    // Create the progress bar div
+    const progressBar = document.createElement("div");
+    progressBar.className = "progress-bar h-1 w-0 bg-accent";
+    progressBar.id = "myBar";
+
+    // Append the progress bar to the progress container
+    progressContainer.appendChild(progressBar);
+
+    // Append the progress container to the document body or any other desired parent element
+    document.body.appendChild(progressContainer);
+  }
+  createProgressBar();
+
+  /** Update the progress bar
+   *  when user scrolls */
+  function updateScrollProgress() {
+    document.addEventListener("scroll", () => {
+      const winScroll =
+        document.body.scrollTop || document.documentElement.scrollTop;
+      const height =
+        document.documentElement.scrollHeight -
+        document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      if (document) {
+        const myBar = document.getElementById("myBar");
+        if (myBar) {
+          myBar.style.width = scrolled + "%";
+        }
+      }
+    });
+  }
+  updateScrollProgress();
+
+  /** Attaches links to headings in the document,
+   *  allowing sharing of sections easily */
+  function addHeadingLinks() {
+    const headings = Array.from(
+      document.querySelectorAll("h2, h3, h4, h5, h6")
+    );
+    for (const heading of headings) {
+      heading.classList.add("group");
+      const link = document.createElement("a");
+      link.className =
+        "heading-link ms-2 no-underline opacity-75 md:opacity-0 md:group-hover:opacity-100 md:focus:opacity-100";
+      link.href = "#" + heading.id;
+
+      const span = document.createElement("span");
+      span.ariaHidden = "true";
+      span.innerText = "#";
+      link.appendChild(span);
+      heading.appendChild(link);
+    }
+  }
+  addHeadingLinks();
+
+  /** Attaches copy buttons to code blocks in the document,
+   * allowing users to copy code easily. */
+  function attachCopyButtons() {
+    const copyButtonLabel = "Copy";
+    const codeBlocks = Array.from(document.querySelectorAll("pre"));
+
+    for (const codeBlock of codeBlocks) {
+      const wrapper = document.createElement("div");
+      wrapper.style.position = "relative";
+
+      // Check if --file-name-offset custom property exists
+      const computedStyle = getComputedStyle(codeBlock);
+      const hasFileNameOffset =
+        computedStyle.getPropertyValue("--file-name-offset").trim() !== "";
+
+      // Determine the top positioning class
+      const topClass = hasFileNameOffset
+        ? "top-(--file-name-offset)"
+        : "-top-3";
+
+      const copyButton = document.createElement("button");
+      copyButton.className = `copy-code absolute end-3 ${topClass} rounded bg-muted border border-muted px-2 py-1 text-xs leading-4 text-foreground font-medium`;
+      copyButton.innerHTML = copyButtonLabel;
+      codeBlock.setAttribute("tabindex", "0");
+      codeBlock.appendChild(copyButton);
+
+      // wrap codebock with relative parent element
+      codeBlock?.parentNode?.insertBefore(wrapper, codeBlock);
+      wrapper.appendChild(codeBlock);
+
+      copyButton.addEventListener("click", async () => {
+        await copyCode(codeBlock, copyButton);
+      });
+    }
+
+    async function copyCode(block, button) {
+      const code = block.querySelector("code");
+      const text = code?.innerText;
+
+      await navigator.clipboard.writeText(text ?? "");
+
+      // visual feedback that task is completed
+      button.innerText = "Copied";
+
+      setTimeout(() => {
+        button.innerText = copyButtonLabel;
+      }, 700);
+    }
+  }
+  attachCopyButtons();
+
+  /* Go to page start after page swap */
+  document.addEventListener("astro:after-swap", () =>
+    window.scrollTo({ left: 0, top: 0, behavior: "instant" })
+  );
+</script>
